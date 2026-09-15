@@ -1,0 +1,3087 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>旅搭日记 · Travel Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================
+   旅搭日记 · 手绘漫画奶油风 v4
+   ========================================================== */
+:root{
+  --paper:#FFF6E9;
+  --card:#FFFDF8;
+  --ink:#5A4A3F;
+  --ink-soft:#9A8878;
+  --coral:#FF8B6B;
+  --sage:#7EC9A3;
+  --mustard:#FFC857;
+  --blue:#7CC4F0;
+  --pink:#FF9FB4;
+  --purple:#B69CF0;
+  --font:'ZCOOL KuaiLe','Baloo 2','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  --font-cute:'ZCOOL QingKe HuangYou','ZCOOL KuaiLe','Baloo 2',sans-serif;
+  --font-hand:'Ma Shan Zheng','ZCOOL QingKe HuangYou','ZCOOL KuaiLe',cursive;
+  --hand-radius:22px 26px 20px 28px / 26px 20px 28px 22px;
+  --hand-radius-sm:14px 18px 13px 19px / 18px 13px 19px 14px;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;
+  color:var(--ink);
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.8;
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255,214,224,.5), transparent 42%),
+    radial-gradient(circle at 88% 26%, rgba(207,233,255,.5), transparent 40%),
+    radial-gradient(circle at 50% 88%, rgba(255,233,168,.4), transparent 46%),
+    radial-gradient(circle at 22% 68%, rgba(214,240,226,.42), transparent 40%);
+  background-attachment:fixed;
+  transition:background-color .35s ease;
+  padding-bottom:96px;
+  overflow-x:hidden;
+}
+
+/* ================= 背景手绘涂鸦 ================= */
+.doodles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.doodles svg{position:absolute;opacity:.62}
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-16px) rotate(4deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0) rotate(6deg)}50%{transform:translateY(-20px) rotate(-5deg)}}
+@keyframes floatC{0%,100%{transform:translate(0,0) rotate(0)}33%{transform:translate(9px,-11px) rotate(10deg)}66%{transform:translate(-9px,-7px) rotate(-8deg)}}
+@keyframes spinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes twinkle{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes drift{0%{transform:translateX(0)}100%{transform:translateX(24px)}}
+
+/* 云朵 */
+.dg-cloud1{left:4%;top:9%;width:110px;color:#BFE0F5;animation:floatA 9s ease-in-out infinite}
+.dg-cloud2{right:6%;top:16%;width:84px;color:#FFD6E0;animation:floatB 11s ease-in-out infinite}
+.dg-cloud3{left:30%;bottom:8%;width:70px;color:#CFE9FF;opacity:.5;animation:floatA 13s ease-in-out infinite}
+.dg-cloud4{right:22%;top:48%;width:62px;color:#D8F3E4;opacity:.45;animation:floatB 10s ease-in-out infinite}
+
+/* 彩虹 */
+.dg-rainbow{left:8%;bottom:22%;width:100px;color:#FFB7C9;animation:floatC 14s ease-in-out infinite}
+
+/* 星星 */
+.dg-star1{left:20%;top:6%;width:26px;color:#FFC857;animation:twinkle 3.2s ease-in-out infinite}
+.dg-star2{right:14%;top:36%;width:20px;color:#FF9FB4;animation:twinkle 2.6s ease-in-out infinite}
+.dg-star3{left:44%;bottom:14%;width:22px;color:#B69CF0;animation:twinkle 3.6s ease-in-out infinite}
+.dg-star4{right:38%;top:12%;width:18px;color:#7CC4F0;animation:twinkle 4s ease-in-out infinite}
+.dg-star5{left:68%;bottom:30%;width:24px;color:#FFC857;opacity:.7;animation:twinkle 3s ease-in-out infinite}
+
+/* 月亮 */
+.dg-moon{right:4%;bottom:12%;width:56px;color:#FFE9A8;animation:floatA 12s ease-in-out infinite}
+
+/* 小飞机 + 虚线 */
+.dg-plane{left:6%;top:38%;width:64px;color:#7CC4F0;animation:floatC 12s ease-in-out infinite}
+
+/* 行李箱 */
+.dg-case{right:8%;bottom:34%;width:56px;color:#B69CF0;opacity:.6;animation:floatA 11s ease-in-out infinite}
+
+/* 地图针 */
+.dg-pin{left:52%;top:60%;width:32px;color:#FF8B6B;opacity:.55;animation:floatB 9s ease-in-out infinite}
+
+/* 咖啡杯 */
+.dg-cup{left:12%;bottom:44%;width:44px;color:#9A8878;opacity:.4;animation:floatA 13s ease-in-out infinite}
+
+/* 小花 */
+.dg-flower1{right:18%;bottom:56%;width:34px;color:#FF9FB4;opacity:.65;animation:spinSlow 40s linear infinite}
+.dg-flower2{left:38%;top:24%;width:28px;color:#FFC857;opacity:.55;animation:spinSlow 55s linear infinite}
+.dg-flower3{right:46%;bottom:10%;width:24px;color:#B69CF0;opacity:.5;animation:spinSlow 48s linear infinite}
+
+/* 爱心 */
+.dg-heart1{left:28%;top:72%;width:28px;color:#FF9FB4;opacity:.6;animation:floatC 10s ease-in-out infinite}
+.dg-heart2{right:26%;top:66%;width:22px;color:#FF8B6B;opacity:.5;animation:floatA 12s ease-in-out infinite}
+
+/* 胶带 */
+.dg-tape1{left:2%;top:52%;width:64px;color:#FFE9A8;opacity:.65;animation:floatB 14s ease-in-out infinite}
+.dg-tape2{right:2%;top:8%;width:56px;color:#D8F3E4;opacity:.6;animation:floatA 15s ease-in-out infinite}
+
+/* ================= 顶部栏 ================= */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  flex-wrap:wrap;
+  padding:16px clamp(16px,4vw,44px);
+  background:linear-gradient(to bottom, var(--paper) 55%, transparent);
+}
+.brand{position:relative;padding-left:8px}
+.brand h1{
+  font-family:var(--font-cute);
+  font-size:clamp(30px,5.4vw,44px);
+  letter-spacing:3px;line-height:1.1;color:var(--ink);
+  position:relative;z-index:1;
+}
+.brand h1::after{
+  content:'';position:absolute;left:-6px;right:-8px;bottom:2px;height:13px;
+  background:rgba(255,200,87,.55);
+  border-radius:8px 14px 10px 12px;
+  z-index:-1;transform:rotate(-1.2deg);
+}
+.brand p{
+  margin:2px 0 0;font-family:'Baloo 2',var(--font);
+  font-size:11px;letter-spacing:2.5px;color:var(--ink-soft);text-transform:uppercase;
+}
+.topbar .actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+
+.btn{
+  font-family:var(--font);font-size:14px;
+  padding:8px 16px;
+  border-radius:var(--hand-radius-sm);
+  background:var(--card);
+  border:2.5px solid var(--ink);
+  color:var(--ink);
+  transition:.16s;
+  box-shadow:3px 3px 0 var(--ink);
+  white-space:nowrap;
+}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn-primary{background:var(--coral);color:#fff}
+.btn-sage{background:var(--sage);color:#fff}
+
+.icon-btn{
+  width:42px;height:42px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;
+  border-radius:50% 46% 50% 48%;
+  background:var(--card);
+  border:2.5px solid var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  transition:.16s;
+}
+.icon-btn:hover{transform:translate(-1px,-1px) rotate(-8deg);box-shadow:4px 4px 0 var(--ink)}
+.icon-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+
+.me-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 14px 5px 7px;
+  background:var(--card);
+  border:2.5px solid var(--ink);
+  border-radius:40px 36px 40px 34px;
+  box-shadow:3px 3px 0 var(--ink);
+  transition:.16s;max-width:190px;
+}
+.me-pill:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.me-pill .me-av{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;background:rgba(255,200,87,.35);flex:0 0 auto;
+}
+.me-pill .me-name{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me-pill .me-edit{font-size:12px;color:var(--ink-soft);flex:0 0 auto}
+
+/* ================= 主容器 ================= */
+main{
+  position:relative;z-index:1;
+  max-width:1000px;margin:0 auto;
+  padding:8px clamp(14px,4vw,32px) 40px;
+}
+
+/* ================= 欢迎便签（明信片） ================= */
+@keyframes memoIn{from{opacity:0;transform:rotate(-3deg) scale(.94)}to{opacity:1;transform:rotate(-.7deg) scale(1)}}
+
+.memo-note{
+  position:relative;
+  margin:8px 0 32px;
+  padding:34px 30px 28px;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255,200,87,.22), transparent 42%),
+    radial-gradient(circle at 8% 88%, rgba(255,159,180,.2), transparent 40%),
+    linear-gradient(150deg,#FFFCF2,#FFF6E4 55%,#FFEED6);
+  border:3px dashed var(--ink);
+  border-radius:var(--hand-radius);
+  box-shadow:7px 7px 0 var(--ink);
+  transform:rotate(-.7deg);
+  animation:memoIn .55s cubic-bezier(.2,.9,.3,1.4);
+  font-family:var(--font-cute);
+}
+.memo-note::before{
+  content:'';position:absolute;left:26px;right:26px;top:10px;height:3px;
+  background-image:radial-gradient(circle, rgba(90,74,63,.26) 1.6px, transparent 1.7px);
+  background-size:14px 3px;background-repeat:repeat-x;
+}
+.memo-note .mtape{
+  position:absolute;width:100px;height:28px;
+  border:2px solid rgba(90,74,63,.35);
+  border-radius:2px;
+}
+.memo-note .mtape.l{left:-20px;top:-14px;transform:rotate(-10deg);background:rgba(255,200,87,.72)}
+.memo-note .mtape.r{right:-20px;top:-14px;transform:rotate(9deg);background:rgba(255,159,180,.62)}
+
+.memo-note h3{
+  font-family:var(--font-cute);
+  font-size:clamp(22px,4vw,30px);
+  letter-spacing:2px;
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  color:var(--ink);
+}
+.memo-note h3 .wave{
+  display:inline-block;
+  animation:waveHand 1.8s ease-in-out infinite;
+  transform-origin:70% 70%;
+}
+@keyframes waveHand{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(18deg)}80%{transform:rotate(-9deg)}90%{transform:rotate(14deg)}}
+
+/* 明信片小花装饰 */
+.memo-deco{
+  position:absolute;
+  pointer-events:none;
+}
+.memo-deco svg{display:block}
+.memo-deco.tl{left:14px;bottom:16px;width:34px;color:var(--pink);opacity:.7}
+.memo-deco.br{right:16px;bottom:20px;width:28px;color:var(--mustard);opacity:.75}
+.memo-deco.tr{right:22px;top:34px;width:26px;color:var(--blue);opacity:.6}
+
+.memo-note p{
+  margin:0 0 14px;
+  font-size:16px;line-height:2;color:var(--ink);
+  font-family:var(--font-cute);
+  letter-spacing:.5px;
+}
+.memo-list{
+  list-style:none;margin:0 0 4px;padding:0;
+  display:flex;flex-direction:column;gap:11px;
+}
+.memo-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  font-size:14.5px;line-height:1.95;
+  padding:9px 15px;
+  background:rgba(255,255,255,.72);
+  border:2px solid rgba(90,74,63,.36);
+  border-radius:var(--hand-radius-sm);
+  font-family:var(--font-cute);
+}
+.memo-list li .num{
+  flex:0 0 27px;height:27px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--mustard);
+  border:2px solid var(--ink);
+  border-radius:50% 46% 50% 48%;
+  font-size:13px;
+  color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.32);
+  margin-top:2px;
+}
+.memo-list li:nth-child(2) .num{background:var(--pink)}
+.memo-list li:nth-child(3) .num{background:var(--blue)}
+.memo-list li:nth-child(4) .num{background:var(--sage)}
+.memo-list li:nth-child(5) .num{background:var(--purple);color:#fff}
+
+.memo-quote{
+  margin-top:24px;padding-top:20px;
+  border-top:3px dashed rgba(90,74,63,.3);
+  text-align:center;
+  font-family:var(--font-hand);
+  font-size:clamp(20px,4vw,27px);
+  color:var(--coral);
+  letter-spacing:3px;
+  line-height:1.6;
+  text-shadow:1.5px 1.5px 0 rgba(255,255,255,.9);
+}
+.memo-quote .deco{
+  display:inline-block;margin:0 8px;
+  font-family:var(--font-cute);
+  animation:beat 1.8s ease-in-out infinite;
+}
+.memo-quote .deco.d2{animation-delay:.5s}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+.memo-foot{
+  margin-top:22px;
+  display:flex;justify-content:center;
+}
+
+/* ================= 旅行列表 ================= */
+.page-title{
+  font-family:var(--font-cute);
+  font-size:clamp(26px,4.4vw,36px);
+  letter-spacing:2px;
+  margin:14px 0 28px;
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+}
+.page-title small{font-size:13px;color:var(--ink-soft);letter-spacing:1px;font-family:var(--font)}
+.trip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:32px}
+
+.trip-card{
+  position:relative;
+  display:flex;gap:16px;
+  padding:18px;
+  background:var(--card);
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius);
+  box-shadow:5px 5px 0 var(--ink);
+  cursor:pointer;
+  transition:.2s;
+}
+.trip-card:nth-child(odd){transform:rotate(-1deg)}
+.trip-card:nth-child(even){transform:rotate(1.1deg)}
+.trip-card:hover{transform:rotate(0) translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+.trip-card:active{transform:rotate(0) translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+
+.trip-card .cover{
+  flex:0 0 104px;height:116px;
+  background:#f3e6d6;
+  border:3px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  overflow:hidden;position:relative;
+  transform:rotate(-2deg);
+}
+.trip-card .cover img{width:100%;height:100%;object-fit:cover;display:block}
+.trip-card .cover .noimg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;background:linear-gradient(135deg,#ffe9c9,#ffd3b6);
+}
+.trip-card h3{
+  font-family:var(--font-cute);
+  font-size:22px;line-height:1.3;margin-bottom:7px;
+  word-break:break-word;padding-right:4px;
+  letter-spacing:1px;
+}
+.trip-card .meta{font-size:12.5px;color:var(--ink-soft);letter-spacing:.4px}
+.trip-card .members{margin:9px 0 7px;font-size:17px;letter-spacing:2px}
+.trip-card .stats{font-size:12.5px;color:var(--coral)}
+
+.trip-card .pin{
+  position:absolute;top:-11px;right:54px;
+  width:20px;height:20px;
+  border-radius:50% 50% 50% 4px;
+  background:var(--coral);
+  border:2.5px solid var(--ink);
+  transform:rotate(-45deg);
+}
+.trip-card .pin::after{
+  content:'';position:absolute;inset:4px;border-radius:50%;background:var(--card);
+}
+.trip-card .corner{
+  position:absolute;right:-6px;bottom:-10px;
+  font-size:22px;transform:rotate(12deg);
+}
+
+.trip-del{
+  position:absolute;right:-12px;top:-12px;
+  width:36px;height:36px;
+  border-radius:50%;
+  background:var(--card);
+  border:2.5px solid var(--ink);
+  box-shadow:2px 2px 0 var(--ink);
+  font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  z-index:6;opacity:.72;transition:.18s;
+}
+.trip-card:hover .trip-del{opacity:1}
+.trip-del:hover{transform:rotate(-14deg) scale(1.14);background:#FFE0DA;opacity:1}
+.trip-del:active{transform:scale(.94)}
+
+/* ================= 旅行详情 ================= */
+.back-btn{
+  font-size:14px;color:var(--ink);
+  padding:7px 16px;
+  border:2.5px solid var(--ink);
+  border-radius:40px 34px 40px 36px;
+  margin-bottom:20px;background:var(--card);
+  box-shadow:3px 3px 0 var(--ink);
+  transition:.16s;
+}
+.back-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.back-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+
+.trip-header{
+  position:relative;
+  padding:30px 28px 26px;
+  margin-bottom:32px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255,200,87,.2), transparent 42%),
+    radial-gradient(circle at 5% 95%, rgba(255,159,180,.18), transparent 40%),
+    var(--card);
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius);
+  box-shadow:6px 6px 0 var(--ink);
+  transform:rotate(-.5deg);
+}
+.trip-header h2{
+  font-family:var(--font-cute);
+  font-size:clamp(28px,5.4vw,42px);
+  line-height:1.22;letter-spacing:2.5px;margin-bottom:10px;
+  word-break:break-word;
+}
+.trip-header .sub{font-size:13px;color:var(--ink-soft);letter-spacing:.6px}
+.trip-header .head-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;margin-top:18px;
+}
+.avatar-stack{display:flex;align-items:center;gap:4px}
+.avatar-stack .av{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;background:#fff;
+  border:2.5px solid var(--ink);
+  margin-left:-10px;
+  box-shadow:2px 2px 0 rgba(90,74,63,.35);
+}
+.avatar-stack .av:first-child{margin-left:0}
+.avatar-stack .tip{font-size:12px;color:var(--ink-soft);margin-left:10px}
+
+/* ================= 留言板 ================= */
+.board-card{
+  position:relative;
+  margin-bottom:36px;
+  padding:24px 24px 22px;
+  background:
+    radial-gradient(circle at 95% 5%, rgba(255,200,87,.22), transparent 40%),
+    linear-gradient(165deg,#FFFBF0,#FFF4DE);
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius);
+  box-shadow:5px 5px 0 var(--ink);
+  transform:rotate(.4deg);
+}
+.board-head{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.board-title{font-family:var(--font-cute);font-size:22px;letter-spacing:1.5px}
+.board-sub{font-size:12px;color:var(--ink-soft)}
+
+.board-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.btab{
+  font-family:var(--font);font-size:13px;
+  padding:6px 14px;
+  border:2.5px solid var(--ink);
+  border-radius:30px;
+  background:rgba(255,255,255,.85);
+  color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.35);
+  transition:.15s;white-space:nowrap;
+}
+.btab:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.btab.on{
+  background:var(--mustard);
+  transform:translate(-1px,-1px);
+  box-shadow:3px 3px 0 var(--ink);
+}
+
+.board-body{min-height:80px}
+.board-ta{
+  width:100%;min-height:120px;
+  padding:14px 16px;
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.92);
+  outline:none;
+  font-family:var(--font);font-size:14.5px;line-height:2;
+  color:var(--ink);
+  resize:vertical;
+  box-shadow:2px 2px 0 rgba(90,74,63,.2) inset;
+}
+.board-ta:focus{background:#fff;border-color:var(--sage);box-shadow:3px 3px 0 rgba(126,201,163,.45)}
+.board-ta::placeholder{color:#bcab9b}
+
+.clist{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:9px}
+.citem{
+  display:flex;align-items:center;gap:11px;
+  padding:8px 14px;
+  background:rgba(255,255,255,.9);
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  box-shadow:2px 2px 0 rgba(90,74,63,.28);
+  transition:.16s;
+}
+.citem.done{background:rgba(126,201,163,.22)}
+.citem.done .ctext{text-decoration:line-through;color:var(--ink-soft)}
+.cbox{
+  flex:0 0 24px;height:24px;border-radius:8px 10px 7px 9px;
+  border:2.5px solid var(--ink);
+  background:#fff;
+  font-size:14px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:.14s;
+}
+.cbox:hover{background:rgba(126,201,163,.3)}
+.citem.done .cbox{background:var(--sage);color:#fff}
+.ctext{flex:1;font-size:14px;word-break:break-word}
+.cdel{
+  flex:0 0 auto;font-size:13px;color:var(--ink-soft);
+  padding:2px 7px;border-radius:20px;transition:.14s;
+}
+.cdel:hover{color:#E2554F;background:rgba(255,122,122,.15)}
+.cempty{font-size:13.5px;color:var(--ink-soft);text-align:center;padding:18px 0}
+
+.cadd{display:flex;gap:9px}
+.cadd input{
+  flex:1;min-width:0;
+  padding:9px 16px;
+  border:2.5px solid var(--ink);
+  border-radius:40px;
+  background:rgba(255,255,255,.9);
+  outline:none;font-size:14px;
+  font-family:var(--font);color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.25) inset;
+}
+.cadd input:focus{background:#fff;border-color:var(--sage)}
+.cadd input::placeholder{color:#bcab9b}
+.cadd button{
+  font-family:var(--font);font-size:15px;
+  padding:0 18px;border-radius:40px;
+  background:var(--mustard);color:var(--ink);
+  border:2.5px solid var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  transition:.15s;
+}
+.cadd button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.cadd button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+
+.letter-note{
+  font-size:13px;color:var(--ink-soft);
+  margin:0 0 12px;line-height:1.9;
+  padding:10px 14px;
+  background:rgba(255,200,87,.2);
+  border:2px dashed rgba(90,74,63,.4);
+  border-radius:var(--hand-radius-sm);
+}
+.envelope{
+  text-align:center;
+  padding:36px 20px;
+  background:linear-gradient(160deg,#FFF3E0,#FFE3D0);
+  border:3px dashed var(--ink);
+  border-radius:var(--hand-radius);
+  cursor:pointer;transition:.2s;
+}
+.envelope:hover{transform:translateY(-3px) rotate(-.8deg);box-shadow:5px 5px 0 var(--ink)}
+.envelope .env-icon{
+  font-size:52px;display:block;margin-bottom:12px;
+  animation:beat 2.2s ease-in-out infinite;
+}
+.envelope .env-text{font-family:var(--font-cute);font-size:19px;color:var(--ink);letter-spacing:1px}
+.envelope .env-hint{font-size:12px;color:var(--ink-soft);margin-top:8px}
+
+.letter-read{
+  background:rgba(255,255,255,.9);
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  padding:22px;
+  box-shadow:3px 3px 0 rgba(90,74,63,.3);
+}
+.letter-paper{
+  font-family:var(--font-cute);
+  font-size:16px;line-height:2.2;
+  color:var(--ink);
+  white-space:pre-wrap;word-break:break-word;
+}
+.letter-empty{color:var(--ink-soft);font-size:14px}
+.letter-sign{
+  margin-top:18px;padding-top:14px;
+  border-top:2.5px dashed rgba(90,74,63,.3);
+  text-align:right;font-size:13px;color:var(--ink-soft);
+}
+
+/* ================= 时间轴 ================= */
+.timeline{position:relative;padding-left:46px}
+.timeline::before{
+  content:'';position:absolute;left:16px;top:10px;bottom:10px;width:3px;
+  background-image:linear-gradient(to bottom, var(--ink) 0 10px, transparent 10px 20px);
+  background-size:3px 20px;opacity:.35;
+}
+.entry{position:relative;margin-bottom:40px}
+.entry-dot{
+  position:absolute;left:-46px;top:14px;
+  width:36px;height:36px;border-radius:50% 46% 50% 48%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;background:var(--card);
+  border:2.5px solid var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.4);
+  z-index:2;
+}
+.entry-card{
+  position:relative;
+  padding:24px 22px 18px;
+  background:var(--card);
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius);
+  box-shadow:5px 5px 0 var(--ink);
+  transform:rotate(var(--rot,0deg));
+  transition:.22s;
+}
+.entry-card:hover{transform:rotate(0deg) translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+
+.tape{
+  position:absolute;width:90px;height:26px;pointer-events:none;z-index:5;
+  border:2px solid rgba(90,74,63,.35);opacity:.85;
+}
+.tape.yellow{background:rgba(255,200,87,.7)}
+.tape.pink{background:rgba(255,159,180,.65)}
+.tape.blue{background:rgba(124,196,240,.6)}
+.tape.sage{background:rgba(126,201,163,.6)}
+.tape-tl{left:-16px;top:-12px;transform:rotate(-8deg);border-radius:2px}
+.tape-tr{right:-16px;top:-12px;transform:rotate(7deg);border-radius:2px}
+
+.entry-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  flex-wrap:wrap;margin-bottom:16px;
+}
+.entry-head .place{font-size:16px;color:var(--coral);letter-spacing:.5px;display:block}
+.entry-head .when{display:block;font-size:12.5px;color:var(--ink-soft);letter-spacing:.8px}
+.entry-head .by{
+  font-size:12.5px;color:var(--ink);
+  background:rgba(126,201,163,.28);
+  border:2px solid var(--ink);
+  padding:3px 12px;border-radius:30px;
+  white-space:nowrap;
+  box-shadow:2px 2px 0 rgba(90,74,63,.35);
+}
+
+.photos{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:18px}
+.polaroid{
+  position:relative;background:#fff;
+  border:2.5px solid var(--ink);
+  border-radius:6px 10px 6px 9px;
+  padding:8px 8px 32px;
+  box-shadow:4px 4px 0 rgba(90,74,63,.85);
+  width:154px;flex:0 0 auto;
+  cursor:zoom-in;transition:.22s;
+}
+.polaroid img{display:block;width:100%;height:132px;object-fit:cover;background:#efe6d8;border-radius:3px}
+.polaroid .cap{
+  position:absolute;left:0;right:0;bottom:7px;text-align:center;
+  font-size:12px;color:var(--ink-soft);
+  padding:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.photos .polaroid:nth-child(3n+1){transform:rotate(-2.6deg)}
+.photos .polaroid:nth-child(3n+2){transform:rotate(2deg)}
+.photos .polaroid:nth-child(3n+3){transform:rotate(-1deg)}
+.polaroid:hover{transform:rotate(0) scale(1.05) !important;z-index:6;box-shadow:7px 7px 0 rgba(90,74,63,.85)}
+
+.badges{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:15px}
+.badge{
+  font-size:13px;padding:4px 14px;border-radius:30px;
+  border:2px solid var(--ink);
+  background:rgba(255,200,87,.45);
+  color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.35);
+}
+.badge.weather{background:rgba(124,196,240,.4)}
+.badge.mood{background:rgba(255,159,180,.4)}
+
+.tag-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}
+.tag-line .label{font-size:12px;color:var(--ink-soft);letter-spacing:1.5px;margin-right:2px}
+.tag{
+  font-size:12.5px;
+  padding:3px 13px;border-radius:30px;
+  border:2px solid var(--ink);
+  background:rgba(255,200,87,.45);
+  color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.3);
+}
+
+.entry-text{
+  margin:0 0 18px;
+  font-size:15.5px;line-height:2;color:var(--ink);
+  white-space:pre-wrap;word-break:break-word;
+}
+
+.entry-foot{
+  display:flex;align-items:center;gap:12px;
+  padding-top:14px;
+  border-top:2.5px dashed rgba(90,74,63,.28);
+  font-size:13px;color:var(--ink-soft);
+}
+.act{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 11px;border-radius:30px;
+  border:2px solid transparent;
+  transition:.15s;color:var(--ink-soft);
+}
+.act:hover{border-color:var(--ink);color:var(--ink);background:rgba(255,200,87,.2)}
+.act.liked{color:var(--coral);font-weight:700}
+.act.right{margin-left:auto}
+.act.right:hover{border-color:var(--coral);color:var(--coral);background:rgba(255,139,107,.12)}
+
+.comments{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.comment{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.comment .cav{
+  flex:0 0 30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  background:#fff;border:2px solid var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.3);
+}
+.comment .bubble{
+  background:rgba(255,255,255,.9);
+  border:2px solid var(--ink);
+  border-radius:4px 16px 16px 16px;
+  padding:8px 14px;flex:1;
+  box-shadow:2px 2px 0 rgba(90,74,63,.25);
+  word-break:break-word;
+}
+.comment:nth-child(even) .bubble{background:rgba(255,246,233,.95)}
+.comment .cname{font-size:12px;color:var(--sage);margin-right:6px}
+.comment .ctime{font-size:11px;color:var(--ink-soft);float:right}
+
+.comment-form{display:flex;gap:9px;margin-top:14px}
+.comment-form input{
+  flex:1;min-width:0;
+  padding:9px 16px;
+  border:2.5px solid var(--ink);
+  border-radius:40px;
+  background:rgba(255,255,255,.9);
+  outline:none;font-size:14px;
+  font-family:var(--font);color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.3) inset;
+}
+.comment-form input:focus{background:#fff;border-color:var(--sage)}
+.comment-form input::placeholder{color:#b9a898}
+.comment-form button{
+  font-family:var(--font);font-size:13px;
+  padding:0 18px;border-radius:40px;
+  background:var(--sage);color:#fff;
+  border:2.5px solid var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  transition:.15s;
+}
+.comment-form button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.comment-form button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+
+/* ================= 悬浮「＋」 ================= */
+.fab{
+  position:fixed;right:clamp(18px,5vw,46px);bottom:30px;z-index:70;
+  font-family:var(--font-cute);font-size:16px;
+  padding:15px 26px;
+  border-radius:50px 44px 50px 46px;
+  background:var(--coral);color:#fff;
+  border:3px solid var(--ink);
+  box-shadow:5px 5px 0 var(--ink);
+  transition:.18s;
+  display:flex;align-items:center;gap:6px;
+  letter-spacing:1px;
+}
+.fab:hover{transform:translate(-2px,-2px) rotate(-2deg);box-shadow:8px 8px 0 var(--ink)}
+.fab:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+
+/* ================= 空状态 ================= */
+.empty{
+  text-align:center;padding:64px 20px;
+  font-size:15px;color:var(--ink-soft);line-height:2.2;
+}
+.empty .big{font-size:60px;display:block;margin-bottom:16px}
+
+/* ================= 弹窗 ================= */
+.mask{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(90,74,63,.4);
+  backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:.2s;
+  overflow-y:auto;
+}
+.mask.show{opacity:1;pointer-events:auto}
+.modal{
+  position:relative;
+  width:100%;max-width:600px;max-height:88vh;overflow-y:auto;
+  background:var(--card);
+  border:3px solid var(--ink);
+  border-radius:var(--hand-radius);
+  box-shadow:8px 8px 0 var(--ink);
+  padding:32px 28px 26px;
+  transform:translateY(20px) scale(.96) rotate(-1deg);
+  transition:.28s cubic-bezier(.2,.9,.3,1.3);
+  margin:auto;
+}
+.mask.show .modal{transform:translateY(0) scale(1) rotate(0)}
+.modal h3{font-family:var(--font-cute);font-size:26px;letter-spacing:1.5px;margin-bottom:8px}
+.modal .hint{font-size:12.5px;color:var(--ink-soft);margin:0 0 22px;line-height:1.9}
+.close-x{
+  position:absolute;right:16px;top:14px;
+  width:34px;height:34px;border-radius:50%;
+  font-size:17px;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  border:2.5px solid var(--ink);
+  background:var(--card);
+  box-shadow:2px 2px 0 var(--ink);
+  transition:.15s;
+}
+.close-x:hover{transform:translate(-1px,-1px) rotate(90deg);box-shadow:3px 3px 0 var(--ink)}
+
+.field{margin-bottom:20px}
+.field > label{
+  display:block;font-size:12.5px;letter-spacing:1.5px;
+  color:var(--ink-soft);margin-bottom:8px;
+}
+.field input[type=text],
+.field input[type=date],
+.field input:not([type]),
+.field textarea,
+.field select{
+  width:100%;
+  padding:11px 16px;
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.9);
+  outline:none;font-size:14.5px;
+  font-family:var(--font);color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.22) inset;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  background:#fff;border-color:var(--sage);
+  box-shadow:3px 3px 0 rgba(126,201,163,.5);
+}
+.field input::placeholder,.field textarea::placeholder{color:#bcab9b}
+.field textarea{resize:vertical;line-height:1.9}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* 日期触发按钮 */
+.date-trigger{
+  width:100%;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
+  padding:11px 16px;
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.9);
+  outline:none;font-size:14.5px;
+  font-family:var(--font);color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.22) inset;
+  text-align:left;
+  cursor:pointer;
+  transition:.15s;
+}
+.date-trigger:hover{background:#fff;border-color:var(--sage)}
+.date-trigger .dt-arrow{
+  font-size:12px;color:var(--ink-soft);
+  transition:.2s;
+}
+.date-trigger:hover .dt-arrow{transform:translateY(2px)}
+
+/* ================= 日期选择器 ================= */
+.dp-shortcuts{
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;
+}
+.dp-shortcuts button{
+  font-family:var(--font);font-size:12.5px;
+  padding:5px 13px;
+  border:2.5px solid var(--ink);
+  border-radius:30px;
+  background:rgba(255,255,255,.9);
+  color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.3);
+  transition:.14s;
+}
+.dp-shortcuts button:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink);background:var(--mustard)}
+.dp-shortcuts button:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+
+.dp-selects{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.dp-selects select{
+  width:100%;
+  padding:10px 14px;
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.9);
+  outline:none;font-size:14.5px;
+  font-family:var(--font);color:var(--ink);
+  box-shadow:2px 2px 0 rgba(90,74,63,.22) inset;
+  cursor:pointer;
+}
+.dp-selects select:focus{border-color:var(--sage)}
+
+.dp-weekdays{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  text-align:center;
+  font-size:12px;color:var(--ink-soft);
+  margin-bottom:8px;
+  letter-spacing:1px;
+}
+.dp-days{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:5px;
+  margin-bottom:18px;
+}
+.dp-day{
+  aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font);font-size:14px;
+  border:2px solid transparent;
+  border-radius:12px 14px 11px 15px;
+  background:transparent;
+  color:var(--ink);
+  transition:.14s;
+  cursor:pointer;
+}
+.dp-day:hover:not(.empty){border-color:var(--ink);background:rgba(255,200,87,.35)}
+.dp-day.empty{cursor:default;opacity:0}
+.dp-day.today{border-color:var(--sage);color:var(--sage);font-weight:700}
+.dp-day.on{
+  background:var(--coral);
+  color:#fff;
+  border-color:var(--ink);
+  box-shadow:2px 2px 0 var(--ink);
+  transform:translate(-1px,-1px);
+}
+
+.dp-time{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  border:2.5px dashed var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.6);
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.dp-time label{font-size:13px;color:var(--ink-soft)}
+.dp-time input[type=time]{
+  font-family:var(--font);font-size:15px;
+  padding:7px 12px;
+  border:2.5px solid var(--ink);
+  border-radius:12px;
+  background:#fff;
+  outline:none;
+  color:var(--ink);
+  cursor:pointer;
+}
+.dp-time input[type=time]:focus{border-color:var(--sage)}
+
+.dp-preview{
+  text-align:center;
+  font-family:var(--font-cute);
+  font-size:19px;
+  color:var(--coral);
+  letter-spacing:1.5px;
+  margin-bottom:16px;
+  padding:10px;
+  background:rgba(255,200,87,.18);
+  border-radius:var(--hand-radius-sm);
+  border:2px solid rgba(90,74,63,.25);
+}
+
+/* ================= 头像 / 调色盘 ================= */
+.avatar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:10px}
+.avatar-opt{
+  aspect-ratio:1;font-size:24px;
+  display:flex;align-items:center;justify-content:center;
+  border:2.5px solid var(--ink);
+  border-radius:16px 20px 15px 21px;
+  background:#fff;cursor:pointer;transition:.15s;
+  box-shadow:2px 2px 0 rgba(90,74,63,.3);
+}
+.avatar-opt:hover{transform:translate(-2px,-2px) rotate(-6deg);box-shadow:4px 4px 0 var(--ink)}
+.avatar-opt.on{
+  background:var(--mustard);
+  transform:translate(-1px,-1px) rotate(-4deg);
+  box-shadow:4px 4px 0 var(--ink);
+}
+
+.palette-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));
+  gap:12px;margin-bottom:20px;
+}
+.swatch{
+  aspect-ratio:1;
+  border:2.5px solid var(--ink);
+  border-radius:18px 22px 16px 24px;
+  cursor:pointer;transition:.15s;
+  box-shadow:2px 2px 0 rgba(90,74,63,.35);
+  position:relative;
+}
+.swatch:hover{transform:translate(-2px,-2px) rotate(-4deg);box-shadow:4px 4px 0 var(--ink)}
+.swatch.on::after{
+  content:'✓';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:var(--ink);
+  text-shadow:0 0 6px #fff,0 0 6px #fff;
+}
+.custom-color{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  border:2.5px dashed var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.6);
+  flex-wrap:wrap;
+}
+.custom-color label{font-size:13px;color:var(--ink-soft)}
+.custom-color input[type=color]{
+  width:52px;height:40px;
+  border:2.5px solid var(--ink);
+  border-radius:12px;
+  background:none;cursor:pointer;padding:2px;
+}
+
+/* ================= 上传 ================= */
+.uploader{
+  border:3px dashed var(--ink);
+  border-radius:var(--hand-radius-sm);
+  padding:20px;text-align:center;
+  background:rgba(255,255,255,.55);
+  cursor:pointer;transition:.18s;
+}
+.uploader:hover{border-color:var(--coral);background:rgba(255,139,107,.08)}
+.uploader .hint-txt{font-size:13px;color:var(--ink-soft)}
+.upload-preview{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;justify-content:center}
+.upload-preview .thumb{position:relative;width:80px;height:80px}
+.upload-preview .thumb img{
+  width:100%;height:100%;object-fit:cover;
+  border:2.5px solid var(--ink);
+  border-radius:10px 14px 10px 13px;
+  box-shadow:2px 2px 0 rgba(90,74,63,.4);
+}
+.upload-preview .thumb button{
+  position:absolute;right:-8px;top:-8px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--coral);color:#fff;font-size:12px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  border:2.5px solid var(--ink);
+  box-shadow:1px 1px 0 var(--ink);
+}
+
+/* ================= chips ================= */
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{
+  font-family:var(--font);font-size:13px;
+  padding:5px 15px;border-radius:30px;
+  border:2.5px solid var(--ink);
+  background:rgba(255,255,255,.9);
+  color:var(--ink);
+  transition:.15s;
+  box-shadow:2px 2px 0 rgba(90,74,63,.3);
+}
+.chip:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--ink)}
+.chip.on{
+  background:var(--coral);color:#fff;
+  transform:translate(-1px,-1px);
+  box-shadow:3px 3px 0 var(--ink);
+}
+.chip.on.sage{background:var(--sage)}
+.chip.on.blue{background:var(--blue)}
+.chip.on.mustard{background:var(--mustard);color:var(--ink)}
+
+.modal-actions{
+  display:flex;justify-content:flex-end;gap:12px;
+  margin-top:28px;padding-top:20px;
+  border-top:2.5px dashed rgba(90,74,63,.28);
+  flex-wrap:wrap;
+}
+
+/* ================= 邀请 ================= */
+.invite-box{
+  text-align:center;padding:22px;
+  background:rgba(255,200,87,.25);
+  border:3px dashed var(--ink);
+  border-radius:var(--hand-radius-sm);
+  margin-bottom:20px;
+}
+.invite-code{
+  font-family:var(--font-cute);
+  font-size:26px;letter-spacing:4px;
+  color:var(--coral);margin-bottom:14px;
+  user-select:all;word-break:break-all;
+  text-shadow:2px 2px 0 rgba(90,74,63,.18);
+}
+
+.code-box{
+  width:100%;
+  padding:12px 14px;
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.95);
+  outline:none;
+  font-family:'Baloo 2',monospace;
+  font-size:12px;line-height:1.6;
+  color:var(--ink);
+  resize:vertical;
+  box-shadow:2px 2px 0 rgba(90,74,63,.22) inset;
+  word-break:break-all;
+}
+.code-tip{
+  font-size:12px;color:var(--ink-soft);
+  margin-top:10px;line-height:1.8;
+}
+
+.member-list{display:flex;flex-direction:column;gap:10px}
+.member-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;
+  border:2.5px solid var(--ink);
+  border-radius:var(--hand-radius-sm);
+  background:rgba(255,255,255,.85);
+  box-shadow:2px 2px 0 rgba(90,74,63,.28);
+}
+.member-row .mav{font-size:20px}
+.member-row .mname{font-size:14px}
+.member-row .role{
+  margin-left:auto;font-size:11.5px;
+  padding:2px 12px;border-radius:30px;
+  background:rgba(126,201,163,.35);
+  border:2px solid var(--ink);
+}
+.member-row .role.owner{background:rgba(255,200,87,.5)}
+
+/* ================= 大图 ================= */
+.lightbox{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(90,74,63,.88);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;opacity:0;pointer-events:none;transition:.2s;
+}
+.lightbox.show{opacity:1;pointer-events:auto}
+.lightbox img{
+  max-width:100%;max-height:88vh;
+  border:8px solid #fff;border-radius:6px;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);
+  transform:rotate(-1.5deg);
+}
+
+/* ================= Toast ================= */
+.toast{
+  position:fixed;left:50%;bottom:120px;transform:translate(-50%,20px);
+  z-index:900;font-size:14px;
+  padding:11px 24px;border-radius:40px;
+  background:var(--card);color:var(--ink);
+  border:2.5px solid var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  opacity:0;pointer-events:none;transition:.25s;
+  max-width:88vw;text-align:center;
+  font-family:var(--font);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+footer.site{
+  position:relative;z-index:1;
+  text-align:center;font-size:12.5px;color:var(--ink-soft);
+  padding:44px 20px 14px;letter-spacing:1.5px;
+  font-family:var(--font-cute);
+}
+
+/* ================= 响应式 ================= */
+@media (max-width:640px){
+  .topbar{padding:12px 16px;gap:10px}
+  .brand h1{font-size:28px;letter-spacing:2px}
+  .brand p{display:none}
+  .btn{padding:7px 13px;font-size:13px}
+  .icon-btn{width:38px;height:38px;font-size:17px}
+  .me-pill{max-width:140px;padding:4px 10px 4px 5px}
+  .me-pill .me-av{width:26px;height:26px;font-size:15px}
+  .me-pill .me-name{font-size:13px}
+  main{padding:8px 16px 30px}
+  .page-title{font-size:24px;margin-bottom:20px}
+  .trip-grid{grid-template-columns:1fr;gap:22px}
+  .memo-note{padding:26px 18px 22px;margin-bottom:24px}
+  .memo-note h3{font-size:20px}
+  .memo-note p{font-size:14.5px}
+  .memo-list li{font-size:13.5px;padding:8px 12px}
+  .memo-quote{font-size:19px;letter-spacing:2px}
+  .memo-deco.tl{width:26px;left:10px}
+  .memo-deco.br{width:22px;right:10px}
+  .memo-deco.tr{width:20px;right:16px;top:30px}
+  .board-card{padding:18px 16px 16px}
+  .btab{font-size:12px;padding:5px 12px}
+  .timeline{padding-left:34px}
+  .timeline::before{left:11px}
+  .entry-dot{left:-34px;width:28px;height:28px;font-size:14px;top:12px}
+  .entry-card{padding:20px 16px 16px}
+  .polaroid{width:126px;padding:7px 7px 28px}
+  .polaroid img{height:108px}
+  .photos{gap:14px}
+  .grid2{grid-template-columns:1fr}
+  .modal{padding:26px 18px 22px}
+  .modal h3{font-size:22px}
+  .fab{right:16px;bottom:18px;padding:13px 20px;font-size:15px}
+  .trip-card .cover{flex:0 0 86px;height:98px}
+  .trip-card h3{font-size:19px}
+  .avatar-grid{grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:8px}
+  .avatar-opt{font-size:20px}
+  .doodles svg{opacity:.42}
+  .trip-card .pin{right:48px}
+  .dp-days{gap:3px}
+  .dp-day{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 背景手绘涂鸦 ================= -->
+<div class="doodles" aria-hidden="true">
+  <!-- 云朵 -->
+  <svg class="dg-cloud1" viewBox="0 0 100 60"><path d="M22 44 Q8 44 10 32 Q12 20 26 22 Q30 10 44 14 Q60 8 66 22 Q84 20 84 34 Q84 46 68 46 Z" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round"/></svg>
+  <svg class="dg-cloud2" viewBox="0 0 100 60"><path d="M22 44 Q8 44 10 32 Q12 20 26 22 Q30 10 44 14 Q60 8 66 22 Q84 20 84 34 Q84 46 68 46 Z" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round"/></svg>
+  <svg class="dg-cloud3" viewBox="0 0 100 60"><path d="M22 44 Q8 44 10 32 Q12 20 26 22 Q30 10 44 14 Q60 8 66 22 Q84 20 84 34 Q84 46 68 46 Z" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round"/></svg>
+  <svg class="dg-cloud4" viewBox="0 0 100 60"><path d="M22 44 Q8 44 10 32 Q12 20 26 22 Q30 10 44 14 Q60 8 66 22 Q84 20 84 34 Q84 46 68 46 Z" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round"/></svg>
+
+  <!-- 彩虹 -->
+  <svg class="dg-rainbow" viewBox="0 0 100 60">
+    <path d="M6 52 Q50 4 94 52" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M16 52 Q50 16 84 52" fill="none" stroke="#FFC857" stroke-width="2.6" stroke-linecap="round" opacity=".8"/>
+    <path d="M26 52 Q50 28 74 52" fill="none" stroke="#7CC4F0" stroke-width="2.6" stroke-linecap="round" opacity=".7"/>
+  </svg>
+
+  <!-- 星星 -->
+  <svg class="dg-star1" viewBox="0 0 24 24"><path d="M12 1 L14.4 9.6 L23 12 L14.4 14.4 L12 23 L9.6 14.4 L1 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+  <svg class="dg-star2" viewBox="0 0 24 24"><path d="M12 1 L14.4 9.6 L23 12 L14.4 14.4 L12 23 L9.6 14.4 L1 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+  <svg class="dg-star3" viewBox="0 0 24 24"><path d="M12 1 L14.4 9.6 L23 12 L14.4 14.4 L12 23 L9.6 14.4 L1 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+  <svg class="dg-star4" viewBox="0 0 24 24"><path d="M12 1 L14.4 9.6 L23 12 L14.4 14.4 L12 23 L9.6 14.4 L1 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+  <svg class="dg-star5" viewBox="0 0 24 24"><path d="M12 1 L14.4 9.6 L23 12 L14.4 14.4 L12 23 L9.6 14.4 L1 12 L9.6 9.6 Z" fill="currentColor"/></svg>
+
+  <!-- 月亮 -->
+  <svg class="dg-moon" viewBox="0 0 40 40">
+    <path d="M26 4 A16 16 0 1 0 26 36 A13 13 0 1 1 26 4 Z" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round"/>
+  </svg>
+
+  <!-- 小飞机 + 虚线轨迹 -->
+  <svg class="dg-plane" viewBox="0 0 80 60">
+    <path d="M4 46 Q24 22 44 38" fill="none" stroke="currentColor" stroke-width="2.2" stroke-dasharray="4 6" stroke-linecap="round" opacity=".7"/>
+    <path d="M40 40 L66 16 L58 44 L50 34 Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M58 44 L66 16" stroke="currentColor" stroke-width="2.2"/>
+  </svg>
+
+  <!-- 行李箱 -->
+  <svg class="dg-case" viewBox="0 0 34 34">
+    <rect x="5" y="12" width="24" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/>
+    <path d="M11 12 V7 Q11 5 13 5 H21 Q23 5 23 7 V12" fill="none" stroke="currentColor" stroke-width="2.6"/>
+    <path d="M5 20 H29" stroke="currentColor" stroke-width="2.4"/>
+    <circle cx="17" cy="24.5" r="1.6" fill="currentColor"/>
+  </svg>
+
+  <!-- 地图针 -->
+  <svg class="dg-pin" viewBox="0 0 24 32">
+    <path d="M12 1 A9 9 0 0 1 21 10 C21 19 12 30 12 30 S3 19 3 10 A9 9 0 0 1 12 1 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+    <circle cx="12" cy="10" r="3.2" fill="currentColor"/>
+  </svg>
+
+  <!-- 咖啡杯 -->
+  <svg class="dg-cup" viewBox="0 0 34 30">
+    <path d="M5 7 H23 V21 Q23 26 18 26 H10 Q5 26 5 21 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M23 11 H27 Q30 11 30 15 Q30 19 27 19 H23" fill="none" stroke="currentColor" stroke-width="2.4"/>
+    <path d="M11 2 Q13 4 11 6 M17 2 Q19 4 17 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+  </svg>
+
+  <!-- 小花 -->
+  <svg class="dg-flower1" viewBox="0 0 24 24">
+    <circle cx="12" cy="5" r="3.4" fill="currentColor"/>
+    <circle cx="19" cy="12" r="3.4" fill="currentColor"/>
+    <circle cx="12" cy="19" r="3.4" fill="currentColor"/>
+    <circle cx="5" cy="12" r="3.4" fill="currentColor"/>
+    <circle cx="12" cy="12" r="3" fill="none" stroke="#fff" stroke-width="2"/>
+  </svg>
+  <svg class="dg-flower2" viewBox="0 0 24 24">
+    <circle cx="12" cy="5" r="3.4" fill="currentColor"/>
+    <circle cx="19" cy="12" r="3.4" fill="currentColor"/>
+    <circle cx="12" cy="19" r="3.4" fill="currentColor"/>
+    <circle cx="5" cy="12" r="3.4" fill="currentColor"/>
+    <circle cx="12" cy="12" r="3" fill="none" stroke="#fff" stroke-width="2"/>
+  </svg>
+  <svg class="dg-flower3" viewBox="0 0 24 24">
+    <circle cx="12" cy="5" r="3.4" fill="currentColor"/>
+    <circle cx="19" cy="12" r="3.4" fill="currentColor"/>
+    <circle cx="12" cy="19" r="3.4" fill="currentColor"/>
+    <circle cx="5" cy="12" r="3.4" fill="currentColor"/>
+    <circle cx="12" cy="12" r="3" fill="none" stroke="#fff" stroke-width="2"/>
+  </svg>
+
+  <!-- 爱心 -->
+  <svg class="dg-heart1" viewBox="0 0 24 24">
+    <path d="M12 21 C4 15 2 11 4 7 C6 3 11 3 12 7 C13 3 18 3 20 7 C22 11 20 15 12 21 Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+  </svg>
+  <svg class="dg-heart2" viewBox="0 0 24 24">
+    <path d="M12 21 C4 15 2 11 4 7 C6 3 11 3 12 7 C13 3 18 3 20 7 C22 11 20 15 12 21 Z" fill="currentColor" opacity=".65"/>
+  </svg>
+
+  <!-- 胶带 -->
+  <svg class="dg-tape1" viewBox="0 0 64 24">
+    <rect x="4" y="6" width="56" height="14" rx="2" fill="currentColor" opacity=".85"/>
+    <path d="M4 6 L0 0 M20 6 L16 0 M36 6 L32 0 M52 6 L48 0" stroke="currentColor" stroke-width="2" opacity=".7"/>
+  </svg>
+  <svg class="dg-tape2" viewBox="0 0 64 24">
+    <rect x="4" y="6" width="56" height="14" rx="2" fill="currentColor" opacity=".85"/>
+    <path d="M4 6 L0 0 M20 6 L16 0 M36 6 L32 0 M52 6 L48 0" stroke="currentColor" stroke-width="2" opacity=".7"/>
+  </svg>
+</div>
+
+<!-- ================= 顶部栏 ================= -->
+<header class="topbar">
+  <div class="brand">
+    <h1>旅搭日记</h1>
+    <p>Travel Journal</p>
+  </div>
+  <div class="actions">
+    <button class="icon-btn" id="btnPalette" title="换背景颜色">🎨</button>
+    <button class="btn" id="btnJoin">🔑 加入</button>
+    <button class="me-pill" id="btnMe" title="修改我的名字和头像">
+      <span class="me-av" id="meAvatar">🐰</span>
+      <span class="me-name" id="meName">设置我</span>
+      <span class="me-edit">✎</span>
+    </button>
+  </div>
+</header>
+
+<!-- ================= 主体 ================= -->
+<main id="main"></main>
+
+<footer class="site">♡ 把走过的路，都贴进这本小册子里 ♡</footer>
+
+<!-- ================= 悬浮「＋」 ================= -->
+<button class="fab" id="fab">＋ 新旅行本</button>
+
+<!-- ================= 我的资料 ================= -->
+<div class="mask" id="maskProfile">
+  <div class="modal" style="max-width:520px">
+    <div class="tape tape-tl yellow"></div>
+    <div class="tape tape-tr pink"></div>
+    <button class="close-x" data-close id="profileClose">✕</button>
+    <h3 id="profileTitle">👋 先认识一下你吧</h3>
+    <p class="hint">取个名字，挑一个代表你的小可爱。朋友加入时会看到它出现在日记和留言旁边～</p>
+
+    <div class="field">
+      <label>你的名字</label>
+      <input type="text" id="pName" placeholder="比如：小桃、阿柚、Momo…" maxlength="12">
+    </div>
+
+    <div class="field">
+      <label>选一个你的头像</label>
+      <div class="avatar-grid" id="avatarGrid"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="btnSaveProfile">就这样 ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 调色盘 ================= -->
+<div class="mask" id="maskPalette">
+  <div class="modal" style="max-width:520px">
+    <div class="tape tape-tl blue"></div>
+    <div class="tape tape-tr sage"></div>
+    <button class="close-x" data-close>✕</button>
+    <h3>🎨 换个背景颜色</h3>
+    <p class="hint">挑一个今天的心情底色吧，选好的颜色会一直留在你的日记本里</p>
+
+    <div class="palette-grid" id="paletteGrid"></div>
+
+    <div class="custom-color">
+      <label for="customColor">自定义颜色 →</label>
+      <input type="color" id="customColor" value="#FFF6E9">
+      <span style="font-size:12.5px;color:var(--ink-soft)">点右边小方块随意调</span>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" data-close>好啦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 日期选择器 ================= -->
+<div class="mask" id="maskDate" style="z-index:320">
+  <div class="modal" style="max-width:460px">
+    <div class="tape tape-tl pink"></div>
+    <div class="tape tape-tr blue"></div>
+    <button class="close-x" data-close>✕</button>
+    <h3>📅 挑一个时间</h3>
+    <p class="hint">可以按年、按月快速往前翻，也可以直接点快捷按钮</p>
+
+    <div class="dp-shortcuts" id="dpShortcuts">
+      <button data-sc="0">今天</button>
+      <button data-sc="1">昨天</button>
+      <button data-sc="3">3 天前</button>
+      <button data-sc="7">一周前</button>
+      <button data-sc="14">两周前</button>
+      <button data-sc="30">一个月前</button>
+      <button data-sc="90">三个月前</button>
+      <button data-sc="180">半年前</button>
+      <button data-sc="365">一年前</button>
+      <button data-sc="730">两年前</button>
+    </div>
+
+    <div class="dp-selects">
+      <select id="dpYear"></select>
+      <select id="dpMonth"></select>
+    </div>
+
+    <div class="dp-weekdays">
+      <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+    </div>
+    <div class="dp-days" id="dpDays"></div>
+
+    <div class="dp-time">
+      <label for="dpTime">具体时间</label>
+      <input type="time" id="dpTime">
+    </div>
+
+    <div class="dp-preview" id="dpPreview">—</div>
+
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn btn-primary" id="dpConfirm">就是这个时间</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 新增记录 ================= -->
+<div class="mask" id="maskEntry">
+  <div class="modal">
+    <div class="tape tape-tl yellow"></div>
+    <div class="tape tape-tr pink"></div>
+    <button class="close-x" data-close>✕</button>
+    <h3>✏️ 写一条旅行记录</h3>
+    <p class="hint">贴张照片，写下当时的心情，再给它贴几个小标签吧</p>
+
+    <div class="field">
+      <label>照片</label>
+      <div class="uploader" id="uploader">
+        <div class="hint-txt">📷 点这里添加照片（可以多选）</div>
+        <div class="upload-preview" id="uploadPreview"></div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <label>地点</label>
+        <input type="text" id="fPlace" placeholder="京都 · 清水寺">
+      </div>
+      <div class="field">
+        <label>时间</label>
+        <button type="button" class="date-trigger" id="dateTrigger">
+          <span id="dateTriggerText">选择日期和时间</span>
+          <span class="dt-arrow">▾</span>
+        </button>
+        <input type="hidden" id="fTime">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>今天的心情</label>
+      <div class="chips" id="moodChips"></div>
+    </div>
+
+    <div class="field">
+      <label>天气</label>
+      <div class="chips" id="weatherChips"></div>
+    </div>
+
+    <div class="field">
+      <label>这组照片是…（可多选）</label>
+      <div class="chips" id="tagChips"></div>
+      <div style="margin-top:12px">
+        <input type="text" id="fTagCustom" placeholder="自定义标签，按回车添加">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>今天想说</label>
+      <textarea id="fText" rows="4" placeholder="随手写点什么…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn btn-primary" id="btnSaveEntry">贴到日记本上</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 新建旅行 ================= -->
+<div class="mask" id="maskTrip">
+  <div class="modal" style="max-width:520px">
+    <div class="tape tape-tl sage"></div>
+    <div class="tape tape-tr yellow"></div>
+    <button class="close-x" data-close>✕</button>
+    <h3>✈️ 开启一本新旅行</h3>
+    <p class="hint">给这趟旅程起个名字吧</p>
+
+    <div class="field">
+      <label>旅行标题</label>
+      <input type="text" id="tTitle" placeholder="例如：京都赏樱 5 天 4 夜">
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label>出发日期</label>
+        <input type="date" id="tStart">
+      </div>
+      <div class="field">
+        <label>结束日期</label>
+        <input type="date" id="tEnd">
+      </div>
+    </div>
+    <div class="field">
+      <label>主要目的地</label>
+      <input type="text" id="tPlace" placeholder="日本 · 京都">
+    </div>
+    <div class="field">
+      <label>封面照片</label>
+      <div class="uploader" id="coverUploader">
+        <div class="hint-txt">🖼️ 选一张当封面（也可以先不选）</div>
+        <div class="upload-preview" id="coverPreview"></div>
+      </div>
+      <input type="file" id="coverInput" accept="image/*" hidden>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn btn-primary" id="btnSaveTrip">创建旅行本</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 邀请 ================= -->
+<div class="mask" id="maskInvite">
+  <div class="modal" style="max-width:560px">
+    <div class="tape tape-tl pink"></div>
+    <div class="tape tape-tr yellow"></div>
+    <button class="close-x" data-close>✕</button>
+    <h3>💌 邀请朋友一起写</h3>
+    <p class="hint">口令里已经装好了这本旅行的信息，复制给朋友，他们输入就能加入，一起记录和编辑～</p>
+
+    <div class="field">
+      <label>选择口令类型</label>
+      <div class="chips" id="codeTypeChips">
+        <button type="button" class="chip on mustard" data-type="light">轻量（只带旅行骨架）</button>
+        <button type="button" class="chip" data-type="full">完整（含照片和内容）</button>
+      </div>
+      <p class="code-tip" id="codeTypeTip">轻量口令短、发送方便；朋友加入后从空白日记本开始一起记录。</p>
+    </div>
+
+    <div class="field">
+      <label>口令</label>
+      <textarea class="code-box" id="inviteCodeBox" rows="4" readonly placeholder="点下面按钮生成口令…"></textarea>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btnCopyCode">复制口令</button>
+        <button class="btn" id="btnRegenCode">重新生成</button>
+      </div>
+      <p class="code-tip">
+        💡 朋友打开这个页面 → 点右上角「🔑 加入」→ 粘贴口令 → 就能一起写啦。<br>
+        如果口令太长不方便发，可以试试「轻量」模式。
+      </p>
+    </div>
+
+    <div class="field">
+      <label>已经在这本日记里的伙伴</label>
+      <div class="member-list" id="memberList"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" data-close>知道啦</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 加入旅行 ================= -->
+<div class="mask" id="maskJoin">
+  <div class="modal" style="max-width:480px">
+    <div class="tape tape-tl blue"></div>
+    <button class="close-x" data-close>✕</button>
+    <h3>🔑 加入朋友的旅行</h3>
+    <p class="hint">把朋友发给你的口令整段粘贴进来，点加入就行～</p>
+    <div class="field">
+      <label>口令</label>
+      <textarea class="code-box" id="joinCode" rows="4" placeholder="TJ1:... 或 TJ2:...&#10;（也支持老的短口令，比如 KYOTO-2024）"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn btn-primary" id="btnDoJoin">加入</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 大图 ================= -->
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt=""></div>
+
+<!-- ================= Toast ================= -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================
+   旅搭日记 · 逻辑 v4
+   ========================================================== */
+const LS_KEY = 'travel-journal-v4';
+
+/* ---------- 小工具 ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2, 10);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+
+function fmtDT(v){
+  if(!v) return '';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return v;
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function fmtD(v){
+  if(!v) return '';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return v;
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+}
+function nowLocalInput(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+function todayInput(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+
+let toastTimer;
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+let saveTimer;
+function saveDebounced(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 400);
+}
+
+/* ---------- Base64（支持中文） ---------- */
+function b64Encode(str){
+  try {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+  } catch(e){ return ''; }
+}
+function b64Decode(b64){
+  try {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  } catch(e){ return ''; }
+}
+
+/* ---------- 图片压缩 ---------- */
+function compressImage(file, maxW = 900, quality = 0.68){
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.width);
+        const c = document.createElement('canvas');
+        c.width  = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve('');
+      img.src = e.target.result;
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+function shrinkImage(dataUrl, maxW = 220, q = 0.42){
+  return new Promise(resolve => {
+    if (!dataUrl) return resolve('');
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = () => resolve('');
+    img.src = dataUrl;
+  });
+}
+
+/* ---------- 占位插画 ---------- */
+function makePlaceholder(c1, c2, emoji){
+  const c = document.createElement('canvas');
+  c.width = 640; c.height = 640;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 640, 640);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  x.fillStyle = g; x.fillRect(0, 0, 640, 640);
+  x.globalAlpha = .45; x.fillStyle = '#fff';
+  x.beginPath(); x.arc(496, 132, 68, 0, Math.PI*2); x.fill();
+  x.globalAlpha = .25; x.fillStyle = '#2b2419';
+  x.beginPath();
+  x.moveTo(0, 548); x.lineTo(172, 358); x.lineTo(322, 512);
+  x.lineTo(472, 332); x.lineTo(640, 532); x.lineTo(640, 640);
+  x.lineTo(0, 640); x.closePath(); x.fill();
+  x.globalAlpha = 1;
+  x.font = '150px serif'; x.textAlign = 'center';
+  x.fillText(emoji, 320, 402);
+  return c.toDataURL('image/jpeg', 0.82);
+}
+
+/* ==========================================================
+   常量
+   ========================================================== */
+const MOODS = ['😄 开心','🥰 幸福','😌 放松','🤩 兴奋','😎 酷','😴 疲惫','😭 感动','🥲 想家','🤔 发呆','🍜 满足'];
+const WEATHERS = ['☀️ 晴','⛅ 多云','🌧️ 雨','❄️ 雪','🌫️ 雾','🌬️ 大风'];
+const CATS = ['美食','合照','景点','搞笑','抓拍','风景','日落','动物','街拍','纪念品'];
+const CAT_COLORS = {
+  '美食':  'rgba(255,200,87,.55)',
+  '合照':  'rgba(255,159,180,.5)',
+  '景点':  'rgba(126,201,163,.5)',
+  '搞笑':  'rgba(182,156,240,.5)',
+  '抓拍':  'rgba(124,196,240,.5)',
+  '风景':  'rgba(126,201,163,.38)',
+  '日落':  'rgba(255,139,107,.45)',
+  '动物':  'rgba(255,200,87,.42)',
+  '街拍':  'rgba(182,156,240,.38)',
+  '纪念品':'rgba(255,159,180,.4)'
+};
+const AVATARS = ['🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🦄','🐳','🐬','🦋','🐙','🌸','🌻','🍓','🍑','⭐','🌙'];
+const PALETTE = [
+  '#FFF6E9','#FFE8E1','#FDEAF1','#F0E9FA','#E5F0FA','#E8F6FF',
+  '#E6F5EC','#EEF6E3','#FFF8DC','#F5E9DC','#F2F0E6','#FFEFD6'
+];
+
+/* ==========================================================
+   状态
+   ========================================================== */
+let state = {
+  me: { id: uid(), name: '', avatar: '🐰' },
+  theme: '#FFF6E9',
+  memoDismissed: false,
+  seeded: false,
+  trips: []
+};
+
+let boardTab = 'plan';
+let letterOpen = false;
+let currentCodeType = 'light';
+
+/* ---------- 存储 ---------- */
+function save(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  catch (e) { toast('存储空间快满了，少放几张照片吧～'); }
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.me && typeof d.me === 'object') state.me = Object.assign(state.me, d.me);
+    if (typeof d.theme === 'string') state.theme = d.theme;
+    if (typeof d.memoDismissed === 'boolean') state.memoDismissed = d.memoDismissed;
+    if (Array.isArray(d.trips)) state.trips = d.trips;
+    if (typeof d.seeded === 'boolean') state.seeded = d.seeded;
+  } catch (e) {}
+}
+
+/* ---------- 主题 ---------- */
+function applyTheme(color){
+  state.theme = color;
+  document.documentElement.style.setProperty('--paper', color);
+}
+
+/* ---------- 身份 ---------- */
+const me = () => state.me;
+const currentTrip = () => state.trips.find(t => t.id === state.currentTripId) || null;
+
+/* ---------- 留言板 ---------- */
+function getBoard(trip){
+  if (!trip.board || typeof trip.board !== 'object') {
+    trip.board = { plan:'', checklist:[], notes:'', letter:'' };
+  }
+  const b = trip.board;
+  if (typeof b.plan !== 'string') b.plan = '';
+  if (typeof b.notes !== 'string') b.notes = '';
+  if (typeof b.letter !== 'string') b.letter = '';
+  if (!Array.isArray(b.checklist)) b.checklist = [];
+  return b;
+}
+function isTripEnded(trip){
+  const endStr = trip.end || trip.start;
+  if (!endStr) return false;
+  const end = new Date(endStr + 'T23:59:59');
+  if (isNaN(end.getTime())) return false;
+  return Date.now() > end.getTime();
+}
+
+/* ==========================================================
+   口令（打包旅行本信息）
+   ========================================================== */
+async function buildInviteCode(trip, full){
+  const data = {
+    v: 1,
+    id: trip.id,
+    t: trip.title,
+    s: trip.start || '',
+    e: trip.end || '',
+    p: trip.place || '',
+    c: trip.inviteCode || '',
+    owner: trip.members[0] ? { name: trip.members[0].name, avatar: trip.members[0].avatar } : null,
+    members: trip.members.map(m => ({ id: m.id, name: m.name, avatar: m.avatar, role: m.role }))
+  };
+
+  if (full){
+    data.board = trip.board;
+    if (trip.cover) data.cover = await shrinkImage(trip.cover, 260, 0.5);
+    data.entries = [];
+    for (const e of trip.entries){
+      const entry = {
+        id: e.id, place: e.place, time: e.time, mood: e.mood, weather: e.weather,
+        tags: e.tags || [], text: e.text,
+        authorId: e.authorId, authorName: e.authorName, authorAvatar: e.authorAvatar,
+        likes: e.likes || [], comments: e.comments || [],
+        photos: []
+      };
+      for (const p of (e.photos || [])){
+        const small = await shrinkImage(p, 220, 0.42);
+        if (small) entry.photos.push(small);
+      }
+      data.entries.push(entry);
+    }
+  }
+
+  const json = JSON.stringify(data);
+  const b64 = b64Encode(json);
+  return (full ? 'TJ2:' : 'TJ1:') + b64;
+}
+
+function parseCode(input){
+  const s = String(input || '').trim();
+  if (!s.startsWith('TJ1:') && !s.startsWith('TJ2:')) return null;
+  const isFull = s.startsWith('TJ2:');
+  const b64 = s.slice(4);
+  const json = b64Decode(b64);
+  if (!json) return null;
+  try {
+    const data = JSON.parse(json);
+    if (!data || typeof data !== 'object') return null;
+    return { full: isFull, data };
+  } catch(e){ return null; }
+}
+
+/* ==========================================================
+   示例数据
+   ========================================================== */
+function seedData(){
+  if (state.seeded) return;
+  state.seeded = true;
+
+  const P1 = makePlaceholder('#ffd6e0', '#ffb3c6', '🌸');
+  const P2 = makePlaceholder('#cfe4f7', '#9cc4e4', '⛩️');
+  const P3 = makePlaceholder('#e2efd2', '#b6d49c', '🍡');
+  const P4 = makePlaceholder('#ffe6bd', '#f0c98a', '🏯');
+
+  const f1 = { id: uid(), name: '阿柚', avatar: '🦊' };
+  const f2 = { id: uid(), name: '小满', avatar: '🐻' };
+  const now = Date.now();
+
+  state.trips = [{
+    id: uid(),
+    title: '京都赏樱 5 天 4 夜',
+    start: '2024-03-30',
+    end: '2024-04-03',
+    place: '日本 · 京都',
+    cover: P1,
+    inviteCode: 'KYOTO-2024',
+    members: [
+      { id: state.me.id, name: state.me.name, avatar: state.me.avatar, role: 'owner' },
+      { id: f1.id, name: f1.name, avatar: f1.avatar, role: 'editor' },
+      { id: f2.id, name: f2.name, avatar: f2.avatar, role: 'editor' }
+    ],
+    board: {
+      plan: 'D1 关西机场 → 京都站 → 民宿放行李 → 晚上先斗町随便逛逛\nD2 清水寺 → 二年坂三年坂 → 祇园\nD3 伏见稻荷（早起！）→ 锦市场\nD4 岚山竹林 → 渡月桥 → 泡温泉\nD5 大阪心斋桥扫货 → 晚上飞回',
+      checklist: [
+        { id: uid(), text: '护照 + 签证复印件', done: true },
+        { id: uid(), text: '转换插头（日本是两脚扁插）', done: true },
+        { id: uid(), text: '租和服的预约确认单', done: false },
+        { id: uid(), text: '买一张 ICOCA 交通卡', done: false },
+        { id: uid(), text: '给朋友带的手信清单', done: false }
+      ],
+      notes: '· 清水寺早上 6 点就开门，早去人少\n· 锦市场大部分店 17:00 就关了，别去太晚\n· 伏见稻荷山上没有便利店，记得带水\n· 和服店要提前一周预约，周末尤其紧张',
+      letter: '亲爱的小队：\n\n写这封信的时候我还在收拾行李，箱子塞了三次才合上。\n\n有点紧张，也有点兴奋。希望这五天我们不要吵架，不要迷路，不要因为找不到餐厅而饿到发脾气。\n\n如果旅途中有谁不开心了，记得抱一下。\n\n等我们回来再看这封信的时候，希望你们都在笑。\n\n—— 出发前一晚'
+    },
+    entries: [
+      {
+        id: uid(),
+        photos: [P1, P2],
+        place: '京都 · 清水寺',
+        time: '2024-03-31T14:30',
+        mood: '😄 开心',
+        weather: '☀️ 晴',
+        tags: ['景点','合照','抓拍'],
+        text: '今天穿了租来的和服，粉粉的，走在二年坂上被好几个人问能不能拍照嘿嘿。\n樱花开得正好，风一吹就像下雪。',
+        authorId: state.me.id,
+        authorName: state.me.name,
+        authorAvatar: state.me.avatar,
+        likes: [f1.id, f2.id],
+        comments: [
+          { id: uid(), authorId: f1.id, authorName: f1.name, authorAvatar: f1.avatar,
+            text: '这张合照太好看了吧！！我直接存手机了', time: now - 7200000 },
+          { id: uid(), authorId: f2.id, authorName: f2.name, authorAvatar: f2.avatar,
+            text: '我也想去，下次带上我 🥺', time: now - 3600000 }
+        ]
+      },
+      {
+        id: uid(),
+        photos: [P3],
+        place: '京都 · 锦市场',
+        time: '2024-04-01T12:10',
+        mood: '🍜 满足',
+        weather: '⛅ 多云',
+        tags: ['美食','街拍'],
+        text: '吃到了玉子烧和抹茶团子，撑着走不动路。这条街太适合街拍了，随手一拍都是画报。',
+        authorId: f1.id,
+        authorName: f1.name,
+        authorAvatar: f1.avatar,
+        likes: [state.me.id],
+        comments: [
+          { id: uid(), authorId: state.me.id, authorName: state.me.name, authorAvatar: state.me.avatar,
+            text: '那家玉子烧真的绝了，我回来还在想', time: now - 1800000 }
+        ]
+      },
+      {
+        id: uid(),
+        photos: [P4],
+        place: '京都 · 伏见稻荷',
+        time: '2024-04-02T08:45',
+        mood: '🤩 兴奋',
+        weather: '☀️ 晴',
+        tags: ['景点','搞笑','抓拍'],
+        text: '早上六点就爬起来了，千本鸟居人还不多，拍到了没有路人的照片！\n下山的时候腿在抖，但值得。',
+        authorId: f2.id,
+        authorName: f2.name,
+        authorAvatar: f2.avatar,
+        likes: [],
+        comments: []
+      }
+    ]
+  }];
+
+  save();
+}
+
+/* ==========================================================
+   渲染
+   ========================================================== */
+function render(){
+  applyTheme(state.theme);
+  renderMePill();
+  const trip = currentTrip();
+  if (trip) renderTrip(trip);
+  else renderTrips();
+  updateFab();
+}
+
+function renderMePill(){
+  $('#meAvatar').textContent = me().avatar;
+  $('#meName').textContent = me().name || '设置我';
+}
+
+function updateFab(){
+  const fab = $('#fab');
+  if (currentTrip()){
+    fab.textContent = '＋ 写一条';
+    fab.dataset.mode = 'entry';
+  } else {
+    fab.textContent = '＋ 新旅行本';
+    fab.dataset.mode = 'trip';
+  }
+}
+
+/* ---------- 欢迎便签 ---------- */
+function renderMemo(){
+  return `
+  <section class="memo-note">
+    <div class="mtape l"></div>
+    <div class="mtape r"></div>
+
+    <span class="memo-deco tl">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="5" r="3.4" fill="currentColor"/>
+        <circle cx="19" cy="12" r="3.4" fill="currentColor"/>
+        <circle cx="12" cy="19" r="3.4" fill="currentColor"/>
+        <circle cx="5" cy="12" r="3.4" fill="currentColor"/>
+        <circle cx="12" cy="12" r="3" fill="none" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </span>
+    <span class="memo-deco br">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 21 C4 15 2 11 4 7 C6 3 11 3 12 7 C13 3 18 3 20 7 C22 11 20 15 12 21 Z" fill="currentColor"/>
+      </svg>
+    </span>
+    <span class="memo-deco tr">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 1 L14.4 9.6 L23 12 L14.4 14.4 L12 23 L9.6 14.4 L1 12 L9.6 9.6 Z" fill="currentColor"/>
+      </svg>
+    </span>
+
+    <h3><span class="wave">👋</span> 嗨，这里是一本会呼吸的旅行手帐</h3>
+    <p>它不是相册，也不是朋友圈。<br>是用来装你和朋友一起走过的路、吃过的饭、犯过的傻。</p>
+    <ul class="memo-list">
+      <li><span class="num">1</span><span>点右下角 <b>「＋ 新旅行本」</b>，给这趟旅程开一本小册子</span></li>
+      <li><span class="num">2</span><span>点 <b>「💌 邀请朋友」</b> 复制口令，朋友输入后就能一起进来贴照片、写日记</span></li>
+      <li><span class="num">3</span><span>每张照片都能标地点、时间、心情，还能贴「美食 / 合照 / 搞笑」这类小标签</span></li>
+      <li><span class="num">4</span><span>留言板可以一起写计划、列清单、记注意事项，谁都能改</span></li>
+      <li><span class="num">5</span><span>出发前写一封给小队的信，旅行结束后才打得开 💌</span></li>
+    </ul>
+    <div class="memo-quote">
+      <span class="deco">✿</span>我们共振过的时光 等于永远<span class="deco d2">✿</span>
+    </div>
+    <div class="memo-foot">
+      <button class="btn btn-primary" data-action="dismiss-memo">知道啦，出发 ✨</button>
+    </div>
+  </section>`;
+}
+
+/* ---------- 旅行列表 ---------- */
+function renderTrips(){
+  const main = $('#main');
+  const memo = state.memoDismissed ? '' : renderMemo();
+
+  if (!state.trips.length){
+    main.innerHTML = `
+      ${memo}
+      <div class="empty">
+        <span class="big">🧳</span>
+        还没有旅行本呢<br>
+        点右下角那个粉粉的「＋」开始第一本吧 ✨
+      </div>`;
+    return;
+  }
+
+  main.innerHTML = `
+    ${memo}
+    <div class="page-title">我的旅行本 <small>共 ${state.trips.length} 本</small></div>
+    <div class="trip-grid">
+      ${state.trips.map(t => {
+        const photoCount = t.entries.reduce((n, e) => n + (e.photos?.length || 0), 0);
+        const commentCount = t.entries.reduce((n, e) => n + (e.comments?.length || 0), 0);
+        const coverInner = t.cover ? `<img src="${t.cover}" alt="">` : `<div class="noimg">🧳</div>`;
+        const corners = ['🌸','⭐','🍃','☁️'];
+        const corner = corners[(t.title.length + t.entries.length) % corners.length];
+        return `
+        <article class="trip-card" data-action="open-trip" data-id="${t.id}">
+          <div class="pin"></div>
+          <button class="trip-del" data-action="del-trip" data-id="${t.id}" title="删除这本旅行">🗑</button>
+          <div class="cover">${coverInner}</div>
+          <div style="flex:1;min-width:0">
+            <h3>${esc(t.title)}</h3>
+            <div class="meta">📅 ${fmtD(t.start)}${t.end ? ' – ' + fmtD(t.end) : ''}</div>
+            <div class="meta">📍 ${esc(t.place || '还没写目的地')}</div>
+            <div class="members">${t.members.map(m => m.avatar).join(' ')}</div>
+            <div class="stats">🌸 ${photoCount} 张照片 · 💬 ${commentCount} 条留言</div>
+          </div>
+          <span class="corner">${corner}</span>
+        </article>`;
+      }).join('')}
+    </div>`;
+}
+
+/* ---------- 旅行详情 ---------- */
+function renderTrip(trip){
+  const entries = [...trip.entries].sort((a, b) => new Date(b.time) - new Date(a.time));
+
+  const timelineHTML = entries.length
+    ? `<div class="timeline">${entries.map((e, i) => renderEntry(e, i)).join('')}</div>`
+    : `<div class="empty"><span class="big">📖</span>这本日记还空着<br>点右下角「＋ 写一条」贴上第一张照片吧</div>`;
+
+  $('#main').innerHTML = `
+    <button class="back-btn" data-action="back">← 回到旅行本</button>
+
+    <section class="trip-header">
+      <h2>${esc(trip.title)}</h2>
+      <div class="sub">📅 ${fmtD(trip.start)}${trip.end ? ' – ' + fmtD(trip.end) : ''} &nbsp;·&nbsp; 📍 ${esc(trip.place || '还没写目的地')}</div>
+      <div class="head-row">
+        <div class="avatar-stack">
+          ${trip.members.map(m => `<div class="av" title="${esc(m.name)}">${m.avatar}</div>`).join('')}
+          <span class="tip">${trip.members.length} 位伙伴一起写</span>
+        </div>
+        <button class="btn btn-sage" data-action="open-invite">💌 邀请朋友</button>
+      </div>
+    </section>
+
+    <section class="board-card" id="boardCard">${renderBoardHTML(trip)}</section>
+
+    ${timelineHTML}
+  `;
+
+  bindBoard(trip);
+}
+
+/* ---------- 留言板 ---------- */
+function renderBoardHTML(trip){
+  const b = getBoard(trip);
+  const ended = isTripEnded(trip);
+
+  const tabs = [
+    { k:'plan',      icon:'📋', label:'旅行计划' },
+    { k:'checklist', icon:'✅', label:'旅行清单' },
+    { k:'notes',     icon:'📌', label:'注意事项' },
+    { k:'letter',    icon:'💌', label:'给小队的信' }
+  ];
+
+  let body = '';
+  if (boardTab === 'plan'){
+    body = `<textarea class="board-ta" id="boardPlan" placeholder="想去哪、想吃什么、想拍什么…都写在这里吧～">${esc(b.plan)}</textarea>`;
+  } else if (boardTab === 'checklist'){
+    body = `
+      <ul class="clist">
+        ${b.checklist.length ? b.checklist.map(it => `
+          <li class="citem ${it.done ? 'done' : ''}">
+            <button class="cbox" data-cl-toggle="${it.id}">${it.done ? '✓' : ''}</button>
+            <span class="ctext">${esc(it.text)}</span>
+            <button class="cdel" data-cl-del="${it.id}">✕</button>
+          </li>`).join('') : `<li class="cempty">清单还是空的，加一条吧 ✍️</li>`}
+      </ul>
+      <form class="cadd" id="clForm">
+        <input id="clInput" placeholder="比如：带转换插头 / 买冰箱贴…" maxlength="60" autocomplete="off">
+        <button type="submit">＋</button>
+      </form>`;
+  } else if (boardTab === 'notes'){
+    body = `<textarea class="board-ta" id="boardNotes" placeholder="出发前一定要记得…">${esc(b.notes)}</textarea>`;
+  } else if (boardTab === 'letter'){
+    body = renderLetterHTML(b, ended);
+  }
+
+  return `
+    <div class="board-head">
+      <span class="board-title">🧷 小队的留言板</span>
+      <span class="board-sub">大家都能一起写</span>
+    </div>
+    <div class="board-tabs">
+      ${tabs.map(t => `<button class="btab ${boardTab === t.k ? 'on' : ''}" data-btab="${t.k}">${t.icon} ${t.label}</button>`).join('')}
+    </div>
+    <div class="board-body">${body}</div>
+  `;
+}
+
+function renderLetterHTML(b, ended){
+  if (!ended){
+    return `
+      <p class="letter-note">✍️ 出发前写下这封信，旅行结束后才会自动打开。写下此刻的心情、期待，或者想对队友说的话吧。</p>
+      <textarea class="board-ta" id="boardLetter" placeholder="亲爱的小队：&#10;&#10;写这封信的时候我还在…">${esc(b.letter)}</textarea>`;
+  }
+  if (!letterOpen){
+    return `
+      <div class="envelope" id="envOpen">
+        <span class="env-icon">💌</span>
+        <div class="env-text">旅行结束啦，打开这封信吧</div>
+        <div class="env-hint">（点一下拆开）</div>
+      </div>`;
+  }
+  return `
+    <div class="letter-read">
+      <div class="letter-paper">${
+        b.letter
+          ? esc(b.letter).replace(/\n/g, '<br>')
+          : '<span class="letter-empty">这封信是空白的…下次记得写点什么呀</span>'
+      }</div>
+      <div class="letter-sign">—— 写于出发之前</div>
+    </div>`;
+}
+
+function refreshBoard(){
+  const trip = currentTrip();
+  if (!trip) return;
+  const card = $('#boardCard');
+  if (!card) return;
+  card.innerHTML = renderBoardHTML(trip);
+  bindBoard(trip);
+}
+
+function bindBoard(trip){
+  const card = $('#boardCard');
+  if (!card) return;
+  const b = getBoard(trip);
+
+  card.querySelectorAll('[data-btab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      boardTab = btn.dataset.btab;
+      letterOpen = false;
+      refreshBoard();
+    });
+  });
+
+  [['boardPlan','plan'], ['boardNotes','notes'], ['boardLetter','letter']].forEach(([id, key]) => {
+    const ta = card.querySelector('#' + id);
+    if (!ta) return;
+    ta.addEventListener('input', () => {
+      b[key] = ta.value;
+      saveDebounced();
+    });
+  });
+
+  card.querySelectorAll('[data-cl-toggle]').forEach(el => {
+    el.addEventListener('click', () => {
+      const it = b.checklist.find(x => x.id === el.dataset.clToggle);
+      if (it){ it.done = !it.done; save(); refreshBoard(); }
+    });
+  });
+
+  card.querySelectorAll('[data-cl-del]').forEach(el => {
+    el.addEventListener('click', () => {
+      b.checklist = b.checklist.filter(x => x.id !== el.dataset.clDel);
+      save(); refreshBoard();
+    });
+  });
+
+  const clForm = card.querySelector('#clForm');
+  if (clForm){
+    clForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const inp = card.querySelector('#clInput');
+      const v = inp.value.trim();
+      if (!v) return;
+      b.checklist.push({ id: uid(), text: v, done: false });
+      save();
+      refreshBoard();
+      const again = document.getElementById('clInput');
+      if (again) again.focus();
+    });
+  }
+
+  const env = card.querySelector('#envOpen');
+  if (env){
+    env.addEventListener('click', () => { letterOpen = true; refreshBoard(); });
+  }
+}
+
+/* ---------- 单条记录 ---------- */
+function renderEntry(e, idx){
+  const rotations = [-.8, .7, -.5, .9];
+  const rot = rotations[idx % rotations.length];
+  const tapeColors = ['yellow', 'pink', 'blue', 'sage'];
+  const tapeColor = tapeColors[idx % tapeColors.length];
+  const liked = (e.likes || []).includes(me().id);
+
+  const photosHTML = (e.photos || []).length
+    ? `<div class="photos">${e.photos.map(p => `
+        <div class="polaroid" data-action="open-photo" data-src="${p}">
+          <img src="${p}" alt="">
+          <div class="cap">${esc(e.place || '')}</div>
+        </div>`).join('')}</div>`
+    : '';
+
+  const tags = e.tags || [];
+  const tagsHTML = tags.length
+    ? `<div class="tag-line">
+         <span class="label">🏷</span>
+         ${tags.map(t => {
+           const bg = CAT_COLORS[t] || 'rgba(255,200,87,.45)';
+           return `<span class="tag" style="background:${bg}">${esc(t)}</span>`;
+         }).join('')}
+       </div>`
+    : '';
+
+  const commentsHTML = (e.comments || []).map(c => `
+    <div class="comment">
+      <div class="cav">${c.authorAvatar || '👤'}</div>
+      <div class="bubble">
+        <span class="cname">${esc(c.authorName || '朋友')}</span>
+        <span class="ctime">${fmtDT(c.time)}</span>
+        <div>${esc(c.text)}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+  <article class="entry">
+    <div class="entry-dot">${e.authorAvatar || '👤'}</div>
+    <div class="entry-card" style="--rot:${rot}deg">
+      <div class="tape tape-tl ${tapeColor}"></div>
+
+      <header class="entry-head">
+        <div>
+          <span class="place">📍 ${esc(e.place || '还没写地点')}</span>
+          <span class="when">🕒 ${fmtDT(e.time)}</span>
+        </div>
+        <span class="by">${e.authorAvatar || '👤'} ${esc(e.authorName || '朋友')}</span>
+      </header>
+
+      ${photosHTML}
+
+      <div class="badges">
+        ${e.mood ? `<span class="badge mood">${esc(e.mood)}</span>` : ''}
+        ${e.weather ? `<span class="badge weather">${esc(e.weather)}</span>` : ''}
+      </div>
+
+      ${tagsHTML}
+
+      ${e.text ? `<p class="entry-text">${esc(e.text)}</p>` : ''}
+
+      <footer class="entry-foot">
+        <button class="act ${liked ? 'liked' : ''}" data-action="like" data-id="${e.id}">
+          ${liked ? '❤️' : '🤍'} ${(e.likes || []).length || ''}
+        </button>
+        <span class="act">💬 ${(e.comments || []).length || ''}</span>
+        ${e.authorId === me().id
+          ? `<button class="act right" data-action="del-entry" data-id="${e.id}">🗑 撕掉这页</button>`
+          : ''}
+      </footer>
+
+      ${commentsHTML ? `<div class="comments">${commentsHTML}</div>` : ''}
+
+      <div class="comment-form">
+        <input type="text" id="ci-${e.id}" placeholder="说点什么…" maxlength="200">
+        <button data-action="send-comment" data-id="${e.id}">发送</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ==========================================================
+   全局点击
+   ========================================================== */
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-action]');
+  if (!el) return;
+  const { action, id } = el.dataset;
+
+  switch (action){
+    case 'dismiss-memo':
+      state.memoDismissed = true;
+      save(); render();
+      break;
+
+    case 'open-trip':
+      state.currentTripId = id;
+      boardTab = 'plan';
+      letterOpen = false;
+      save(); render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+
+    case 'back':
+      state.currentTripId = null;
+      save(); render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+
+    case 'del-trip': {
+      ev.stopPropagation();
+      const trip = state.trips.find(t => t.id === id);
+      if (!trip) return;
+      if (!confirm(`确定要删除「${trip.title}」这本旅行吗？\n里面的照片和留言都会一起消失哦，删掉就找不回来了。`)) return;
+      state.trips = state.trips.filter(t => t.id !== id);
+      if (state.currentTripId === id) state.currentTripId = null;
+      save(); render();
+      toast('旅行本已经删掉啦 🗑');
+      break;
+    }
+
+    case 'del-entry': {
+      if (!confirm('确定要撕掉这一页吗？')) return;
+      const trip = currentTrip();
+      if (!trip) return;
+      trip.entries = trip.entries.filter(x => x.id !== id);
+      save(); render();
+      toast('已经撕掉这一页啦 🗑');
+      break;
+    }
+
+    case 'like': {
+      const trip = currentTrip();
+      if (!trip) return;
+      const entry = trip.entries.find(x => x.id === id);
+      if (!entry) return;
+      entry.likes = entry.likes || [];
+      const i = entry.likes.indexOf(me().id);
+      if (i >= 0) entry.likes.splice(i, 1);
+      else entry.likes.push(me().id);
+      save(); render();
+      break;
+    }
+
+    case 'send-comment': {
+      const input = document.getElementById('ci-' + id);
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+      const trip = currentTrip();
+      if (!trip) return;
+      const entry = trip.entries.find(x => x.id === id);
+      if (!entry) return;
+      entry.comments = entry.comments || [];
+      entry.comments.push({
+        id: uid(),
+        authorId: me().id,
+        authorName: me().name,
+        authorAvatar: me().avatar,
+        text,
+        time: Date.now()
+      });
+      save(); render();
+      const again = document.getElementById('ci-' + id);
+      if (again) again.focus();
+      break;
+    }
+
+    case 'open-photo':
+      $('#lightboxImg').src = el.dataset.src;
+      $('#lightbox').classList.add('show');
+      break;
+
+    case 'open-invite':
+      openInviteModal();
+      break;
+  }
+});
+
+/* 回车发送留言 */
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  const input = ev.target;
+  if (input.tagName === 'INPUT' && input.id && input.id.startsWith('ci-')){
+    ev.preventDefault();
+    const btn = document.querySelector(`[data-action="send-comment"][data-id="${input.id.slice(3)}"]`);
+    if (btn) btn.click();
+  }
+});
+
+/* 关闭弹窗 */
+document.addEventListener('click', ev => {
+  if (ev.target.closest('[data-close]')) {
+    ev.target.closest('.mask')?.classList.remove('show');
+  }
+  if (ev.target.classList.contains('mask')) {
+    ev.target.classList.remove('show');
+  }
+});
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape'){
+    $$('.mask.show').forEach(m => {
+      if (m.id === 'maskProfile' && !state.me.name) return;
+      m.classList.remove('show');
+    });
+    $('#lightbox').classList.remove('show');
+  }
+});
+
+$('#lightbox').addEventListener('click', () => $('#lightbox').classList.remove('show'));
+
+/* ==========================================================
+   悬浮「＋」
+   ========================================================== */
+$('#fab').addEventListener('click', () => {
+  if ($('#fab').dataset.mode === 'entry') openEntryModal();
+  else openTripModal();
+});
+
+/* ==========================================================
+   我的资料
+   ========================================================== */
+let pickedAvatar = '🐰';
+
+function openProfileModal(isFirst){
+  $('#profileTitle').textContent = isFirst ? '👋 先认识一下你吧' : '✎ 改改我的样子';
+  $('#pName').value = me().name || '';
+  pickedAvatar = me().avatar || '🐰';
+
+  $('#avatarGrid').innerHTML = AVATARS.map(a =>
+    `<button type="button" class="avatar-opt ${a === pickedAvatar ? 'on' : ''}" data-av="${a}">${a}</button>`
+  ).join('');
+
+  $('#avatarGrid').querySelectorAll('.avatar-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pickedAvatar = btn.dataset.av;
+      $('#avatarGrid').querySelectorAll('.avatar-opt').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    });
+  });
+
+  $('#profileClose').style.display = isFirst ? 'none' : '';
+  $('#maskProfile').classList.add('show');
+  if (isFirst) setTimeout(() => $('#pName').focus(), 260);
+}
+
+$('#btnMe').addEventListener('click', () => openProfileModal(false));
+
+$('#btnSaveProfile').addEventListener('click', () => {
+  const name = $('#pName').value.trim();
+  if (!name){ toast('先给自己起个名字吧 ✍️'); $('#pName').focus(); return; }
+
+  const oldName = me().name;
+  me().name = name;
+  me().avatar = pickedAvatar;
+
+  state.trips.forEach(t => {
+    t.members.forEach(m => {
+      if (m.id === me().id){ m.name = name; m.avatar = pickedAvatar; }
+    });
+    t.entries.forEach(e => {
+      if (e.authorId === me().id){ e.authorName = name; e.authorAvatar = pickedAvatar; }
+      (e.comments || []).forEach(c => {
+        if (c.authorId === me().id){ c.authorName = name; c.authorAvatar = pickedAvatar; }
+      });
+    });
+  });
+
+  const wasFirst = !oldName;
+  save();
+
+  if (wasFirst){
+    seedData();
+    $('#maskProfile').classList.remove('show');
+    render();
+    toast(`欢迎你，${name} ${pickedAvatar}`);
+  } else {
+    $('#maskProfile').classList.remove('show');
+    render();
+    toast('换好啦 ✨');
+  }
+});
+
+/* ==========================================================
+   调色盘
+   ========================================================== */
+function openPaletteModal(){
+  const grid = $('#paletteGrid');
+  grid.innerHTML = PALETTE.map(c =>
+    `<button type="button" class="swatch ${c.toLowerCase() === state.theme.toLowerCase() ? 'on' : ''}"
+             style="background:${c}" data-color="${c}" title="${c}"></button>`
+  ).join('');
+
+  grid.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const c = sw.dataset.color;
+      applyTheme(c);
+      save();
+      grid.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+      sw.classList.add('on');
+      $('#customColor').value = c;
+    });
+  });
+
+  $('#customColor').value = /^#[0-9a-f]{6}$/i.test(state.theme) ? state.theme : '#FFF6E9';
+  $('#maskPalette').classList.add('show');
+}
+
+$('#btnPalette').addEventListener('click', openPaletteModal);
+
+$('#customColor').addEventListener('input', e => {
+  applyTheme(e.target.value);
+  save();
+  $('#paletteGrid').querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+});
+
+/* ==========================================================
+   日期选择器
+   ========================================================== */
+let dp = { y: 0, m: 0, d: 1, hh: 14, mm: 30 };
+let dpInited = false;
+
+function parseDT(v){
+  const fallback = new Date();
+  if (!v) return fallback;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? fallback : d;
+}
+
+function setDpFromDate(d){
+  dp.y = d.getFullYear();
+  dp.m = d.getMonth() + 1;
+  dp.d = d.getDate();
+  dp.hh = d.getHours();
+  dp.mm = d.getMinutes();
+}
+
+function openDatePicker(){
+  const cur = $('#fTime').value;
+  const d = parseDT(cur);
+  setDpFromDate(d);
+  buildYearOptions();
+  buildMonthOptions();
+  buildDayGrid();
+  $('#dpTime').value = pad(dp.hh) + ':' + pad(dp.mm);
+  updateDpPreview();
+  $('#maskDate').classList.add('show');
+}
+
+function buildYearOptions(){
+  const sel = $('#dpYear');
+  const curY = new Date().getFullYear();
+  const startY = curY - 25;
+  const endY = curY + 2;
+  let html = '';
+  for (let y = endY; y >= startY; y--){
+    html += `<option value="${y}" ${y === dp.y ? 'selected' : ''}>${y} 年</option>`;
+  }
+  sel.innerHTML = html;
+}
+
+function buildMonthOptions(){
+  const sel = $('#dpMonth');
+  let html = '';
+  for (let m = 1; m <= 12; m++){
+    html += `<option value="${m}" ${m === dp.m ? 'selected' : ''}>${m} 月</option>`;
+  }
+  sel.innerHTML = html;
+}
+
+function buildDayGrid(){
+  const box = $('#dpDays');
+  const firstDay = new Date(dp.y, dp.m - 1, 1).getDay();
+  const daysInMonth = new Date(dp.y, dp.m, 0).getDate();
+  const today = new Date();
+  const isThisMonth = (today.getFullYear() === dp.y && today.getMonth() + 1 === dp.m);
+
+  let html = '';
+  for (let i = 0; i < firstDay; i++){
+    html += `<div class="dp-day empty"></div>`;
+  }
+  for (let d = 1; d <= daysInMonth; d++){
+    const isToday = isThisMonth && today.getDate() === d;
+    const isOn = d === dp.d;
+    html += `<button type="button" class="dp-day ${isToday ? 'today' : ''} ${isOn ? 'on' : ''}" data-d="${d}">${d}</button>`;
+  }
+  box.innerHTML = html;
+
+  box.querySelectorAll('.dp-day[data-d]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      dp.d = Number(btn.dataset.d);
+      buildDayGrid();
+      updateDpPreview();
+    });
+  });
+}
+
+function updateDpPreview(){
+  const hh = dp.hh, mm = dp.mm;
+  const str = `${dp.y} 年 ${dp.m} 月 ${dp.d} 日  ${pad(hh)}:${pad(mm)}`;
+  $('#dpPreview').textContent = str;
+}
+
+$('#dpYear').addEventListener('change', e => {
+  dp.y = Number(e.target.value);
+  buildDayGrid();
+  updateDpPreview();
+});
+$('#dpMonth').addEventListener('change', e => {
+  dp.m = Number(e.target.value);
+  buildDayGrid();
+  updateDpPreview();
+});
+$('#dpTime').addEventListener('input', e => {
+  const v = e.target.value;
+  if (!v) return;
+  const [hh, mm] = v.split(':').map(Number);
+  dp.hh = hh; dp.mm = mm;
+  updateDpPreview();
+});
+
+$('#dpShortcuts').addEventListener('click', e => {
+  const btn = e.target.closest('[data-sc]');
+  if (!btn) return;
+  const days = Number(btn.dataset.sc);
+  const target = new Date();
+  target.setDate(target.getDate() - days);
+  setDpFromDate(target);
+  buildYearOptions();
+  buildMonthOptions();
+  buildDayGrid();
+  $('#dpTime').value = pad(dp.hh) + ':' + pad(dp.mm);
+  updateDpPreview();
+});
+
+$('#dpConfirm').addEventListener('click', () => {
+  const v = $('#dpTime').value || (pad(dp.hh) + ':' + pad(dp.mm));
+  const [hh, mm] = v.split(':').map(Number);
+  dp.hh = hh; dp.mm = mm;
+
+  const str = `${dp.y}-${pad(dp.m)}-${pad(dp.d)}T${pad(dp.hh)}:${pad(dp.mm)}`;
+  $('#fTime').value = str;
+  $('#dateTriggerText').textContent = `${dp.y} 年 ${dp.m} 月 ${dp.d} 日  ${pad(dp.hh)}:${pad(dp.mm)}`;
+  $('#maskDate').classList.remove('show');
+});
+
+$('#dateTrigger').addEventListener('click', openDatePicker);
+
+/* ==========================================================
+   新增记录
+   ========================================================== */
+let pendingPhotos = [];
+let pickedMood = '';
+let pickedWeather = '';
+let pickedTags = new Set();
+
+function buildChips(container, list, onPick, extraClass = ''){
+  container.innerHTML = list.map(v =>
+    `<button type="button" class="chip ${extraClass}" data-v="${esc(v)}">${esc(v)}</button>`
+  ).join('');
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => onPick(chip.dataset.v, chip));
+  });
+}
+
+function openEntryModal(){
+  const trip = currentTrip();
+  if (!trip){ toast('先进入一本旅行吧'); return; }
+
+  pendingPhotos = [];
+  pickedMood = '';
+  pickedWeather = '';
+  pickedTags = new Set();
+
+  $('#fPlace').value = trip.place || '';
+  $('#fTime').value = nowLocalInput();
+  // 同步日期按钮文字
+  const initD = parseDT($('#fTime').value);
+  $('#dateTriggerText').textContent =
+    `${initD.getFullYear()} 年 ${initD.getMonth()+1} 月 ${initD.getDate()} 日  ${pad(initD.getHours())}:${pad(initD.getMinutes())}`;
+
+  $('#fText').value = '';
+  $('#fTagCustom').value = '';
+  renderUploadPreview();
+
+  buildChips($('#moodChips'), MOODS, (v, chip) => {
+    pickedMood = (pickedMood === v) ? '' : v;
+    $('#moodChips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    if (pickedMood) chip.classList.add('on');
+  });
+
+  buildChips($('#weatherChips'), WEATHERS, (v, chip) => {
+    pickedWeather = (pickedWeather === v) ? '' : v;
+    $('#weatherChips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    if (pickedWeather) chip.classList.add('on');
+  }, 'blue');
+
+  buildChips($('#tagChips'), CATS, (v, chip) => {
+    if (pickedTags.has(v)){ pickedTags.delete(v); chip.classList.remove('on'); }
+    else { pickedTags.add(v); chip.classList.add('on'); }
+  }, 'sage');
+
+  $('#maskEntry').classList.add('show');
+  setTimeout(() => $('#fPlace').focus(), 240);
+}
+
+function renderUploadPreview(){
+  const box = $('#uploadPreview');
+  box.innerHTML = pendingPhotos.map((p, i) => `
+    <div class="thumb">
+      <img src="${p}" alt="">
+      <button type="button" data-remove="${i}">✕</button>
+    </div>`).join('');
+  box.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      pendingPhotos.splice(Number(btn.dataset.remove), 1);
+      renderUploadPreview();
+    });
+  });
+}
+
+$('#uploader').addEventListener('click', () => $('#fileInput').click());
+
+$('#fileInput').addEventListener('change', async ev => {
+  const files = [...ev.target.files];
+  if (!files.length) return;
+  toast('正在处理照片…');
+  for (const f of files){
+    if (!f.type.startsWith('image/')) continue;
+    const data = await compressImage(f, 900, 0.68);
+    if (data) pendingPhotos.push(data);
+  }
+  renderUploadPreview();
+  ev.target.value = '';
+});
+
+$('#fTagCustom').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  ev.preventDefault();
+  const v = ev.target.value.trim();
+  if (!v) return;
+  ev.target.value = '';
+  if (pickedTags.has(v)) return;
+  pickedTags.add(v);
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'chip sage on';
+  chip.textContent = v;
+  chip.addEventListener('click', () => {
+    pickedTags.delete(v);
+    chip.remove();
+  });
+  $('#tagChips').appendChild(chip);
+});
+
+$('#btnSaveEntry').addEventListener('click', () => {
+  const trip = currentTrip();
+  if (!trip) return;
+
+  const place = $('#fPlace').value.trim();
+  const time  = $('#fTime').value || nowLocalInput();
+  const text  = $('#fText').value.trim();
+
+  if (!pendingPhotos.length && !text){
+    toast('至少放一张照片或写点什么吧 ✍️');
+    return;
+  }
+
+  trip.entries.push({
+    id: uid(),
+    photos: [...pendingPhotos],
+    place,
+    time,
+    mood: pickedMood,
+    weather: pickedWeather,
+    tags: [...pickedTags],
+    text,
+    authorId: me().id,
+    authorName: me().name,
+    authorAvatar: me().avatar,
+    likes: [],
+    comments: []
+  });
+
+  if (!trip.cover && pendingPhotos.length) trip.cover = pendingPhotos[0];
+
+  save();
+  $('#maskEntry').classList.remove('show');
+  render();
+  toast('已经贴到日记本上啦 📖');
+});
+
+/* ==========================================================
+   新建旅行
+   ========================================================== */
+let pendingCover = '';
+
+function openTripModal(){
+  pendingCover = '';
+  $('#tTitle').value = '';
+  $('#tStart').value = todayInput();
+  $('#tEnd').value = '';
+  $('#tPlace').value = '';
+  $('#coverPreview').innerHTML = '';
+  $('#maskTrip').classList.add('show');
+  setTimeout(() => $('#tTitle').focus(), 240);
+}
+
+$('#coverUploader').addEventListener('click', () => $('#coverInput').click());
+
+$('#coverInput').addEventListener('change', async ev => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  pendingCover = await compressImage(f, 900, 0.7);
+  $('#coverPreview').innerHTML = `<div class="thumb"><img src="${pendingCover}" alt=""></div>`;
+  ev.target.value = '';
+});
+
+$('#btnSaveTrip').addEventListener('click', () => {
+  const title = $('#tTitle').value.trim();
+  if (!title){ toast('给旅行起个名字吧 ✍️'); $('#tTitle').focus(); return; }
+
+  const raw = title.replace(/[^\w\u4e00-\u9fa5]/g, '').slice(0, 5).toUpperCase() || 'TRIP';
+
+  const trip = {
+    id: uid(),
+    title,
+    start: $('#tStart').value || todayInput(),
+    end: $('#tEnd').value || '',
+    place: $('#tPlace').value.trim(),
+    cover: pendingCover,
+    inviteCode: raw + '-' + Math.floor(Math.random() * 9000 + 1000),
+    members: [{ id: me().id, name: me().name, avatar: me().avatar, role: 'owner' }],
+    board: { plan:'', checklist:[], notes:'', letter:'' },
+    entries: []
+  };
+
+  state.trips.unshift(trip);
+  state.currentTripId = trip.id;
+  boardTab = 'plan';
+  letterOpen = false;
+  save();
+  $('#maskTrip').classList.remove('show');
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('新的旅行本做好啦 ✈️');
+});
+
+/* ==========================================================
+   邀请（口令）
+   ========================================================== */
+async function regenerateCode(){
+  const trip = currentTrip();
+  if (!trip) return;
+  const box = $('#inviteCodeBox');
+  box.value = '正在生成…';
+  try {
+    const code = await buildInviteCode(trip, currentCodeType === 'full');
+    box.value = code;
+  } catch (e) {
+    box.value = '';
+    toast('生成口令失败，试试轻量模式');
+  }
+}
+
+function openInviteModal(){
+  const trip = currentTrip();
+  if (!trip) return;
+
+  $('#memberList').innerHTML = trip.members.map(m => `
+    <div class="member-row">
+      <span class="mav">${m.avatar}</span>
+      <span class="mname">${esc(m.name)}</span>
+      <span class="role ${m.role === 'owner' ? 'owner' : ''}">
+        ${m.role === 'owner' ? '创建者' : '一起写'}
+      </span>
+    </div>`).join('');
+
+  // 恢复默认轻量模式
+  currentCodeType = 'light';
+  $('#codeTypeChips').querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('on', c.dataset.type === 'light');
+  });
+  $('#codeTypeTip').textContent = '轻量口令短、发送方便；朋友加入后从空白日记本开始一起记录。';
+
+  $('#inviteCodeBox').value = '';
+  $('#maskInvite').classList.add('show');
+  regenerateCode();
+}
+
+$('#codeTypeChips').addEventListener('click', e => {
+  const btn = e.target.closest('[data-type]');
+  if (!btn) return;
+  currentCodeType = btn.dataset.type;
+  $('#codeTypeChips').querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === btn));
+  $('#codeTypeTip').textContent = currentCodeType === 'light'
+    ? '轻量口令短、发送方便；朋友加入后从空白日记本开始一起记录。'
+    : '完整口令包含照片和全部内容，会稍微长一点，朋友加入后就能看到现在的内容。';
+  regenerateCode();
+});
+
+$('#btnRegenCode').addEventListener('click', regenerateCode);
+
+$('#btnCopyCode').addEventListener('click', async () => {
+  const code = $('#inviteCodeBox').value;
+  if (!code || code === '正在生成…'){ toast('口令还没生成好呢'); return; }
+  try {
+    await navigator.clipboard.writeText(code);
+    toast('口令复制好啦，发给朋友吧 💌');
+  } catch (e) {
+    const box = $('#inviteCodeBox');
+    box.select();
+    document.execCommand('copy');
+    toast('口令复制好啦 💌');
+  }
+});
+
+/* ==========================================================
+   加入旅行
+   ========================================================== */
+$('#btnJoin').addEventListener('click', () => {
+  $('#joinCode').value = '';
+  $('#maskJoin').classList.add('show');
+  setTimeout(() => $('#joinCode').focus(), 240);
+});
+
+$('#btnDoJoin').addEventListener('click', () => {
+  const raw = $('#joinCode').value.trim();
+  if (!raw){ toast('把口令粘贴进来吧 🔑'); return; }
+
+  // 1) 优先按 TJ 口令解析
+  const parsed = parseCode(raw);
+  if (parsed){
+    joinFromCode(parsed.data, parsed.full);
+    return;
+  }
+
+  // 2) 兼容旧的短口令（在本机创建过的旅行之间匹配）
+  const up = raw.toUpperCase();
+  const trip = state.trips.find(t => (t.inviteCode || '').toUpperCase() === up);
+  if (!trip){
+    toast('没有找到这个口令，确认一下有没有复制完整～');
+    return;
+  }
+  if (!trip.members.some(m => m.id === me().id)){
+    trip.members.push({ id: me().id, name: me().name, avatar: me().avatar, role: 'editor' });
+  }
+  state.currentTripId = trip.id;
+  boardTab = 'plan';
+  letterOpen = false;
+  save();
+  $('#maskJoin').classList.remove('show');
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast(`加入「${trip.title}」成功 🎉`);
+});
+
+function joinFromCode(data, full){
+  // 先按 id 找本地已有的旅行
+  let trip = state.trips.find(t => t.id === data.id);
+
+  if (!trip){
+    // 本地没有 → 新建一本
+    const members = [];
+    if (data.owner && data.owner.name){
+      members.push({
+        id: 'owner-' + (data.id || uid()),
+        name: data.owner.name,
+        avatar: data.owner.avatar || '👤',
+        role: 'owner'
+      });
+    }
+    if (Array.isArray(data.members)){
+      data.members.forEach(m => {
+        if (!members.some(x => x.id === m.id)){
+          members.push({
+            id: m.id, name: m.name, avatar: m.avatar || '👤', role: m.role || 'editor'
+          });
+        }
+      });
+    }
+
+    trip = {
+      id: data.id || uid(),
+      title: data.t || '朋友的旅行本',
+      start: data.s || todayInput(),
+      end: data.e || '',
+      place: data.p || '',
+      cover: data.cover || '',
+      inviteCode: data.c || 'TRIP-' + Math.floor(Math.random() * 9000 + 1000),
+      members,
+      board: data.board || { plan:'', checklist:[], notes:'', letter:'' },
+      entries: full && Array.isArray(data.entries) ? data.entries : []
+    };
+    state.trips.unshift(trip);
+  } else if (full && Array.isArray(data.entries) && data.entries.length){
+    // 本地已有同 id 的旅行 → 合并条目（按 id 去重）
+    const existIds = new Set(trip.entries.map(e => e.id));
+    data.entries.forEach(e => {
+      if (!existIds.has(e.id)) trip.entries.push(e);
+    });
+    if (data.board) trip.board = Object.assign(getBoard(trip), data.board);
+  }
+
+  // 把自己加入成员
+  if (!trip.members.some(m => m.id === me().id)){
+    trip.members.push({ id: me().id, name: me().name, avatar: me().avatar, role: 'editor' });
+  }
+
+  state.currentTripId = trip.id;
+  boardTab = 'plan';
+  letterOpen = false;
+  save();
+  $('#maskJoin').classList.remove('show');
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast(`加入「${trip.title}」成功 🎉 一起写吧`);
+}
+
+/* ==========================================================
+   启动
+   ========================================================== */
+function boot(){
+  load();
+  applyTheme(state.theme);
+  if (!state.me.name){
+    openProfileModal(true);
+  } else {
+    seedData();
+    render();
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
