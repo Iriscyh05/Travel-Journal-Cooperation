@@ -1214,22 +1214,11 @@ footer.site{
 <!-- ================= Toast ================= -->
 <div class="toast" id="toast"></div>
 
-<!-- ================= Supabase SDK ================= -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-
 <script>
 /* ==========================================================
-   旅搭日记 · Supabase 云端版
+   旅搭日记 · 逻辑
    ========================================================== */
-
-/* ----------------------------------------------------------
-   ⚙️ 第 1 步：把下面两个常量换成你自己 Supabase 项目的值
-   （Supabase 控制台 → Project Settings → API）
-   ---------------------------------------------------------- */
-const SUPABASE_URL      = 'https://ojbxrxubxnheqenjxxrl.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_rBORIGz1KpQZhElXVVLy-Q_cc8zW2f3';
-
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const LS_KEY = 'travel-journal-v3';
 
 /* ---------- 小工具 ---------- */
 const $  = s => document.querySelector(s);
@@ -1260,11 +1249,6 @@ function todayInput(){
   d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
   return d.toISOString().slice(0, 10);
 }
-function toISO(v){
-  if(!v) return new Date().toISOString();
-  const d = new Date(v);
-  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
-}
 
 let toastTimer;
 function toast(msg){
@@ -1272,7 +1256,13 @@ function toast(msg){
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+let saveTimer;
+function saveDebounced(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 400);
 }
 
 /* ---------- 图片压缩 ---------- */
@@ -1295,6 +1285,31 @@ function compressImage(file, maxW = 900, quality = 0.68){
     reader.onerror = () => resolve('');
     reader.readAsDataURL(file);
   });
+}
+
+/* ---------- 生成占位插画（示例数据用） ---------- */
+function makePlaceholder(c1, c2, emoji){
+  const c = document.createElement('canvas');
+  c.width = 640; c.height = 640;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 640, 640);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  x.fillStyle = g; x.fillRect(0, 0, 640, 640);
+
+  x.globalAlpha = .45; x.fillStyle = '#fff';
+  x.beginPath(); x.arc(496, 132, 68, 0, Math.PI*2); x.fill();
+
+  x.globalAlpha = .25; x.fillStyle = '#2b2419';
+  x.beginPath();
+  x.moveTo(0, 548); x.lineTo(172, 358); x.lineTo(322, 512);
+  x.lineTo(472, 332); x.lineTo(640, 532); x.lineTo(640, 640);
+  x.lineTo(0, 640); x.closePath(); x.fill();
+
+  x.globalAlpha = 1;
+  x.font = '150px serif';
+  x.textAlign = 'center';
+  x.fillText(emoji, 320, 402);
+  return c.toDataURL('image/jpeg', 0.82);
 }
 
 /* ==========================================================
@@ -1326,21 +1341,47 @@ const PALETTE = [
    状态
    ========================================================== */
 let state = {
-  me: { id: null, name: '', avatar: '🐰' },
+  me: { id: uid(), name: '', avatar: '🐰' },
   theme: '#FFF6E9',
   memoDismissed: false,
+  seeded: false,
   trips: []
 };
-let currentTripId = null;
 
 let boardTab = 'plan';
 let letterOpen = false;
 
-const me = () => state.me;
-const currentTrip = () => state.trips.find(t => t.id === currentTripId) || null;
+/* ---------- 存储 ---------- */
+function save(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+  catch (e) { toast('存储空间快满了，少放几张照片吧～'); }
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.me && typeof d.me === 'object') state.me = Object.assign(state.me, d.me);
+    if (typeof d.theme === 'string') state.theme = d.theme;
+    if (typeof d.memoDismissed === 'boolean') state.memoDismissed = d.memoDismissed;
+    if (Array.isArray(d.trips)) state.trips = d.trips;
+    if (typeof d.seeded === 'boolean') state.seeded = d.seeded;
+  } catch (e) { /* 数据损坏则忽略 */ }
+}
 
+/* ---------- 主题 ---------- */
+function applyTheme(color){
+  state.theme = color;
+  document.documentElement.style.setProperty('--paper', color);
+}
+
+/* ---------- 身份 ---------- */
+const me = () => state.me;
+const currentTrip = () => state.trips.find(t => t.id === state.currentTripId) || null;
+
+/* ---------- 留言板数据 ---------- */
 function getBoard(trip){
-  if (!trip.board || typeof trip.board !== 'object'){
+  if (!trip.board || typeof trip.board !== 'object') {
     trip.board = { plan:'', checklist:[], notes:'', letter:'' };
   }
   const b = trip.board;
@@ -1360,104 +1401,104 @@ function isTripEnded(trip){
 }
 
 /* ==========================================================
-   数据库操作封装
+   示例数据
    ========================================================== */
-async function run(promise, errMsg){
-  const { data, error } = await promise;
-  if (error){
-    console.error('[Supabase]', error);
-    toast(errMsg || ('出错了：' + error.message));
-    return null;
-  }
-  return data;
-}
+function seedData(){
+  if (state.seeded) return;
+  state.seeded = true;
 
-/* ---------- 登录（匿名） ---------- */
-async function ensureAuth(){
-  const { data: { session } } = await sb.auth.getSession();
-  if (session?.user) return session.user;
+  const P1 = makePlaceholder('#ffd6e0', '#ffb3c6', '🌸');
+  const P2 = makePlaceholder('#cfe4f7', '#9cc4e4', '⛩️');
+  const P3 = makePlaceholder('#e2efd2', '#b6d49c', '🍡');
+  const P4 = makePlaceholder('#ffe6bd', '#f0c98a', '🏯');
 
-  const { data, error } = await sb.auth.signInAnonymously();
-  if (error) throw error;
-  return data.user;
-}
+  const f1 = { id: uid(), name: '阿柚', avatar: '🦊' };
+  const f2 = { id: uid(), name: '小满', avatar: '🐻' };
+  const now = Date.now();
 
-/* ---------- 拉取全部旅行数据 ---------- */
-async function loadTrips(){
-  const data = await run(
-    sb.from('trips').select(`
-      id, title, start_date, end_date, place, cover, invite_code, owner_id, board, created_at,
-      trip_members ( user_id, role, profiles ( id, name, avatar ) ),
-      entries (
-        id, photos, place, taken_at, mood, weather, tags, content,
-        author_id, author_name, author_avatar, likes, created_at,
-        comments ( id, author_id, author_name, author_avatar, text, created_at )
-      )
-    `).order('created_at', { ascending: false }),
-    '读取旅行数据失败'
-  );
+  state.trips = [{
+    id: uid(),
+    title: '京都赏樱 5 天 4 夜',
+    start: '2024-03-30',
+    end: '2024-04-03',
+    place: '日本 · 京都',
+    cover: P1,
+    inviteCode: 'KYOTO-2024',
+    members: [
+      { id: state.me.id, name: state.me.name, avatar: state.me.avatar, role: 'owner' },
+      { id: f1.id, name: f1.name, avatar: f1.avatar, role: 'editor' },
+      { id: f2.id, name: f2.name, avatar: f2.avatar, role: 'editor' }
+    ],
+    board: {
+      plan: 'D1 关西机场 → 京都站 → 民宿放行李 → 晚上先斗町随便逛逛\nD2 清水寺 → 二年坂三年坂 → 祇园\nD3 伏见稻荷（早起！）→ 锦市场\nD4 岚山竹林 → 渡月桥 → 泡温泉\nD5 大阪心斋桥扫货 → 晚上飞回',
+      checklist: [
+        { id: uid(), text: '护照 + 签证复印件', done: true },
+        { id: uid(), text: '转换插头（日本是两脚扁插）', done: true },
+        { id: uid(), text: '租和服的预约确认单', done: false },
+        { id: uid(), text: '买一张 ICOCA 交通卡', done: false },
+        { id: uid(), text: '给朋友带的手信清单', done: false }
+      ],
+      notes: '· 清水寺早上 6 点就开门，早去人少\n· 锦市场大部分店 17:00 就关了，别去太晚\n· 伏见稻荷山上没有便利店，记得带水\n· 和服店要提前一周预约，周末尤其紧张',
+      letter: '亲爱的小队：\n\n写这封信的时候我还在收拾行李，箱子塞了三次才合上。\n\n有点紧张，也有点兴奋。希望这五天我们不要吵架，不要迷路，不要因为找不到餐厅而饿到发脾气。\n\n如果旅途中有谁不开心了，记得抱一下。\n\n等我们回来再看这封信的时候，希望你们都在笑。\n\n—— 出发前一晚'
+    },
+    entries: [
+      {
+        id: uid(),
+        photos: [P1, P2],
+        place: '京都 · 清水寺',
+        time: '2024-03-31T14:30',
+        mood: '😄 开心',
+        weather: '☀️ 晴',
+        tags: ['景点','合照','抓拍'],
+        text: '今天穿了租来的和服，粉粉的，走在二年坂上被好几个人问能不能拍照嘿嘿。\n樱花开得正好，风一吹就像下雪。',
+        authorId: state.me.id,
+        authorName: state.me.name,
+        authorAvatar: state.me.avatar,
+        likes: [f1.id, f2.id],
+        comments: [
+          { id: uid(), authorId: f1.id, authorName: f1.name, authorAvatar: f1.avatar,
+            text: '这张合照太好看了吧！！我直接存手机了', time: now - 7200000 },
+          { id: uid(), authorId: f2.id, authorName: f2.name, authorAvatar: f2.avatar,
+            text: '我也想去，下次带上我 🥺', time: now - 3600000 }
+        ]
+      },
+      {
+        id: uid(),
+        photos: [P3],
+        place: '京都 · 锦市场',
+        time: '2024-04-01T12:10',
+        mood: '🍜 满足',
+        weather: '⛅ 多云',
+        tags: ['美食','街拍'],
+        text: '吃到了玉子烧和抹茶团子，撑着走不动路。这条街太适合街拍了，随手一拍都是画报。',
+        authorId: f1.id,
+        authorName: f1.name,
+        authorAvatar: f1.avatar,
+        likes: [state.me.id],
+        comments: [
+          { id: uid(), authorId: state.me.id, authorName: state.me.name, authorAvatar: state.me.avatar,
+            text: '那家玉子烧真的绝了，我回来还在想', time: now - 1800000 }
+        ]
+      },
+      {
+        id: uid(),
+        photos: [P4],
+        place: '京都 · 伏见稻荷',
+        time: '2024-04-02T08:45',
+        mood: '🤩 兴奋',
+        weather: '☀️ 晴',
+        tags: ['景点','搞笑','抓拍'],
+        text: '早上六点就爬起来了，千本鸟居人还不多，拍到了没有路人的照片！\n下山的时候腿在抖，但值得。',
+        authorId: f2.id,
+        authorName: f2.name,
+        authorAvatar: f2.avatar,
+        likes: [],
+        comments: []
+      }
+    ]
+  }];
 
-  if (!data) return;
-
-  state.trips = data.map(t => ({
-    id: t.id,
-    title: t.title,
-    start: t.start_date || '',
-    end: t.end_date || '',
-    place: t.place || '',
-    cover: t.cover || '',
-    inviteCode: t.invite_code,
-    ownerId: t.owner_id,
-    board: t.board || { plan:'', checklist:[], notes:'', letter:'' },
-    members: (t.trip_members || []).map(m => ({
-      id: m.user_id,
-      role: m.role,
-      name: (m.profiles && m.profiles.name) || '朋友',
-      avatar: (m.profiles && m.profiles.avatar) || '👤'
-    })),
-    entries: (t.entries || []).map(e => ({
-      id: e.id,
-      photos: e.photos || [],
-      place: e.place || '',
-      time: e.taken_at || e.created_at,
-      mood: e.mood || '',
-      weather: e.weather || '',
-      tags: e.tags || [],
-      text: e.content || '',
-      authorId: e.author_id,
-      authorName: e.author_name || '朋友',
-      authorAvatar: e.author_avatar || '👤',
-      likes: e.likes || [],
-      comments: (e.comments || [])
-        .map(c => ({
-          id: c.id,
-          authorId: c.author_id,
-          authorName: c.author_name || '朋友',
-          authorAvatar: c.author_avatar || '👤',
-          text: c.text,
-          time: new Date(c.created_at).getTime()
-        }))
-        .sort((a, b) => a.time - b.time)
-    }))
-  }));
-}
-
-/* ---------- 保存个人偏好 ---------- */
-async function saveProfilePatch(patch){
-  if (!state.me.id) return;
-  await run(sb.from('profiles').update(patch).eq('id', state.me.id), '保存失败');
-}
-
-/* ---------- 留言板防抖保存 ---------- */
-let boardSaveTimer;
-function saveBoardDebounced(tripId, board){
-  clearTimeout(boardSaveTimer);
-  boardSaveTimer = setTimeout(async () => {
-    await run(
-      sb.from('trips').update({ board }).eq('id', tripId),
-      '留言板保存失败'
-    );
-  }, 600);
+  save();
 }
 
 /* ==========================================================
@@ -1538,9 +1579,794 @@ function renderTrips(){
         const coverInner = t.cover ? `<img src="${t.cover}" alt="">` : `<div class="noimg">🧳</div>`;
         const corners = ['🌸','⭐','🍃','☁️'];
         const corner = corners[(t.title.length + t.entries.length) % corners.length];
-        const canDelete = t.ownerId === me().id;
         return `
         <article class="trip-card" data-action="open-trip" data-id="${t.id}">
           <div class="pin"></div>
-          ${canDelete ? `<button class="trip-del" data-action="del-trip" data-id="${t.id}" title="删除这本旅行">🗑</button>` : ''}
-          <div class="cover">${
+          <button class="trip-del" data-action="del-trip" data-id="${t.id}" title="删除这本旅行">🗑</button>
+          <div class="cover">${coverInner}</div>
+          <div style="flex:1;min-width:0">
+            <h3>${esc(t.title)}</h3>
+            <div class="meta">📅 ${fmtD(t.start)}${t.end ? ' – ' + fmtD(t.end) : ''}</div>
+            <div class="meta">📍 ${esc(t.place || '还没写目的地')}</div>
+            <div class="members">${t.members.map(m => m.avatar).join(' ')}</div>
+            <div class="stats">🌸 ${photoCount} 张照片 · 💬 ${commentCount} 条留言</div>
+          </div>
+          <span class="corner">${corner}</span>
+        </article>`;
+      }).join('')}
+    </div>`;
+}
+
+/* ---------- 旅行详情 ---------- */
+function renderTrip(trip){
+  const entries = [...trip.entries].sort((a, b) => new Date(b.time) - new Date(a.time));
+
+  const timelineHTML = entries.length
+    ? `<div class="timeline">${entries.map((e, i) => renderEntry(e, i)).join('')}</div>`
+    : `<div class="empty"><span class="big">📖</span>这本日记还空着<br>点右下角「＋ 写一条」贴上第一张照片吧</div>`;
+
+  $('#main').innerHTML = `
+    <button class="back-btn" data-action="back">← 回到旅行本</button>
+
+    <section class="trip-header">
+      <h2>${esc(trip.title)}</h2>
+      <div class="sub">📅 ${fmtD(trip.start)}${trip.end ? ' – ' + fmtD(trip.end) : ''} &nbsp;·&nbsp; 📍 ${esc(trip.place || '还没写目的地')}</div>
+      <div class="head-row">
+        <div class="avatar-stack">
+          ${trip.members.map(m => `<div class="av" title="${esc(m.name)}">${m.avatar}</div>`).join('')}
+          <span class="tip">${trip.members.length} 位伙伴一起写</span>
+        </div>
+        <button class="btn btn-sage" data-action="open-invite">💌 邀请朋友</button>
+      </div>
+    </section>
+
+    <section class="board-card" id="boardCard">${renderBoardHTML(trip)}</section>
+
+    ${timelineHTML}
+  `;
+
+  bindBoard(trip);
+}
+
+/* ---------- 留言板 HTML ---------- */
+function renderBoardHTML(trip){
+  const b = getBoard(trip);
+  const ended = isTripEnded(trip);
+
+  const tabs = [
+    { k:'plan',      icon:'📋', label:'旅行计划' },
+    { k:'checklist', icon:'✅', label:'旅行清单' },
+    { k:'notes',     icon:'📌', label:'注意事项' },
+    { k:'letter',    icon:'💌', label:'给小队的信' }
+  ];
+
+  let body = '';
+  if (boardTab === 'plan'){
+    body = `<textarea class="board-ta" id="boardPlan" placeholder="想去哪、想吃什么、想拍什么…都写在这里吧～">${esc(b.plan)}</textarea>`;
+  } else if (boardTab === 'checklist'){
+    body = `
+      <ul class="clist">
+        ${b.checklist.length ? b.checklist.map(it => `
+          <li class="citem ${it.done ? 'done' : ''}">
+            <button class="cbox" data-cl-toggle="${it.id}">${it.done ? '✓' : ''}</button>
+            <span class="ctext">${esc(it.text)}</span>
+            <button class="cdel" data-cl-del="${it.id}">✕</button>
+          </li>`).join('') : `<li class="cempty">清单还是空的，加一条吧 ✍️</li>`}
+      </ul>
+      <form class="cadd" id="clForm">
+        <input id="clInput" placeholder="比如：带转换插头 / 买冰箱贴…" maxlength="60" autocomplete="off">
+        <button type="submit">＋</button>
+      </form>`;
+  } else if (boardTab === 'notes'){
+    body = `<textarea class="board-ta" id="boardNotes" placeholder="出发前一定要记得…">${esc(b.notes)}</textarea>`;
+  } else if (boardTab === 'letter'){
+    body = renderLetterHTML(b, ended);
+  }
+
+  return `
+    <div class="board-head">
+      <span class="board-title">🧷 小队的留言板</span>
+      <span class="board-sub">大家都能一起写</span>
+    </div>
+    <div class="board-tabs">
+      ${tabs.map(t => `<button class="btab ${boardTab === t.k ? 'on' : ''}" data-btab="${t.k}">${t.icon} ${t.label}</button>`).join('')}
+    </div>
+    <div class="board-body">${body}</div>
+  `;
+}
+
+function renderLetterHTML(b, ended){
+  if (!ended){
+    return `
+      <p class="letter-note">✍️ 出发前写下这封信，旅行结束后才会自动打开。写下此刻的心情、期待，或者想对队友说的话吧。</p>
+      <textarea class="board-ta" id="boardLetter" placeholder="亲爱的小队：&#10;&#10;写这封信的时候我还在…">${esc(b.letter)}</textarea>`;
+  }
+  if (!letterOpen){
+    return `
+      <div class="envelope" id="envOpen">
+        <span class="env-icon">💌</span>
+        <div class="env-text">旅行结束啦，打开这封信吧</div>
+        <div class="env-hint">（点一下拆开）</div>
+      </div>`;
+  }
+  return `
+    <div class="letter-read">
+      <div class="letter-paper">${
+        b.letter
+          ? esc(b.letter).replace(/\n/g, '<br>')
+          : '<span class="letter-empty">这封信是空白的…下次记得写点什么呀</span>'
+      }</div>
+      <div class="letter-sign">—— 写于出发之前</div>
+    </div>`;
+}
+
+/* ---------- 留言板事件 ---------- */
+function refreshBoard(){
+  const trip = currentTrip();
+  if (!trip) return;
+  const card = $('#boardCard');
+  if (!card) return;
+  card.innerHTML = renderBoardHTML(trip);
+  bindBoard(trip);
+}
+
+function bindBoard(trip){
+  const card = $('#boardCard');
+  if (!card) return;
+  const b = getBoard(trip);
+
+  // 切换标签
+  card.querySelectorAll('[data-btab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      boardTab = btn.dataset.btab;
+      letterOpen = false;
+      refreshBoard();
+    });
+  });
+
+  // 文本域自动保存
+  [['boardPlan','plan'], ['boardNotes','notes'], ['boardLetter','letter']].forEach(([id, key]) => {
+    const ta = card.querySelector('#' + id);
+    if (!ta) return;
+    ta.addEventListener('input', () => {
+      b[key] = ta.value;
+      saveDebounced();
+    });
+  });
+
+  // 清单勾选
+  card.querySelectorAll('[data-cl-toggle]').forEach(el => {
+    el.addEventListener('click', () => {
+      const it = b.checklist.find(x => x.id === el.dataset.clToggle);
+      if (it){ it.done = !it.done; save(); refreshBoard(); }
+    });
+  });
+
+  // 清单删除
+  card.querySelectorAll('[data-cl-del]').forEach(el => {
+    el.addEventListener('click', () => {
+      b.checklist = b.checklist.filter(x => x.id !== el.dataset.clDel);
+      save(); refreshBoard();
+    });
+  });
+
+  // 清单添加
+  const clForm = card.querySelector('#clForm');
+  if (clForm){
+    clForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const inp = card.querySelector('#clInput');
+      const v = inp.value.trim();
+      if (!v) return;
+      b.checklist.push({ id: uid(), text: v, done: false });
+      save();
+      refreshBoard();
+      const again = document.getElementById('clInput');
+      if (again) again.focus();
+    });
+  }
+
+  // 拆信
+  const env = card.querySelector('#envOpen');
+  if (env){
+    env.addEventListener('click', () => { letterOpen = true; refreshBoard(); });
+  }
+}
+
+/* ---------- 单条记录 ---------- */
+function renderEntry(e, idx){
+  const rotations = [-.8, .7, -.5, .9];
+  const rot = rotations[idx % rotations.length];
+  const tapeColors = ['yellow', 'pink', 'blue', 'sage'];
+  const tapeColor = tapeColors[idx % tapeColors.length];
+  const liked = (e.likes || []).includes(me().id);
+
+  const photosHTML = (e.photos || []).length
+    ? `<div class="photos">${e.photos.map(p => `
+        <div class="polaroid" data-action="open-photo" data-src="${p}">
+          <img src="${p}" alt="">
+          <div class="cap">${esc(e.place || '')}</div>
+        </div>`).join('')}</div>`
+    : '';
+
+  const tags = e.tags || [];
+  const tagsHTML = tags.length
+    ? `<div class="tag-line">
+         <span class="label">🏷</span>
+         ${tags.map(t => {
+           const bg = CAT_COLORS[t] || 'rgba(255,200,87,.45)';
+           return `<span class="tag" style="background:${bg}">${esc(t)}</span>`;
+         }).join('')}
+       </div>`
+    : '';
+
+  const commentsHTML = (e.comments || []).map(c => `
+    <div class="comment">
+      <div class="cav">${c.authorAvatar || '👤'}</div>
+      <div class="bubble">
+        <span class="cname">${esc(c.authorName || '朋友')}</span>
+        <span class="ctime">${fmtDT(c.time)}</span>
+        <div>${esc(c.text)}</div>
+      </div>
+    </div>`).join('');
+
+  return `
+  <article class="entry">
+    <div class="entry-dot">${e.authorAvatar || '👤'}</div>
+    <div class="entry-card" style="--rot:${rot}deg">
+      <div class="tape tape-tl ${tapeColor}"></div>
+
+      <header class="entry-head">
+        <div>
+          <span class="place">📍 ${esc(e.place || '还没写地点')}</span>
+          <span class="when">🕒 ${fmtDT(e.time)}</span>
+        </div>
+        <span class="by">${e.authorAvatar || '👤'} ${esc(e.authorName || '朋友')}</span>
+      </header>
+
+      ${photosHTML}
+
+      <div class="badges">
+        ${e.mood ? `<span class="badge mood">${esc(e.mood)}</span>` : ''}
+        ${e.weather ? `<span class="badge weather">${esc(e.weather)}</span>` : ''}
+      </div>
+
+      ${tagsHTML}
+
+      ${e.text ? `<p class="entry-text">${esc(e.text)}</p>` : ''}
+
+      <footer class="entry-foot">
+        <button class="act ${liked ? 'liked' : ''}" data-action="like" data-id="${e.id}">
+          ${liked ? '❤️' : '🤍'} ${(e.likes || []).length || ''}
+        </button>
+        <span class="act">💬 ${(e.comments || []).length || ''}</span>
+        ${e.authorId === me().id
+          ? `<button class="act right" data-action="del-entry" data-id="${e.id}">🗑 撕掉这页</button>`
+          : ''}
+      </footer>
+
+      ${commentsHTML ? `<div class="comments">${commentsHTML}</div>` : ''}
+
+      <div class="comment-form">
+        <input type="text" id="ci-${e.id}" placeholder="说点什么…" maxlength="200">
+        <button data-action="send-comment" data-id="${e.id}">发送</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ==========================================================
+   全局点击
+   ========================================================== */
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-action]');
+  if (!el) return;
+  const { action, id } = el.dataset;
+
+  switch (action){
+    case 'dismiss-memo':
+      state.memoDismissed = true;
+      save(); render();
+      break;
+
+    case 'open-trip':
+      state.currentTripId = id;
+      boardTab = 'plan';
+      letterOpen = false;
+      save(); render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+
+    case 'back':
+      state.currentTripId = null;
+      save(); render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      break;
+
+    case 'del-trip': {
+      ev.stopPropagation();
+      const trip = state.trips.find(t => t.id === id);
+      if (!trip) return;
+      if (!confirm(`确定要删除「${trip.title}」这本旅行吗？\n里面的照片和留言都会一起消失哦，删掉就找不回来了。`)) return;
+      state.trips = state.trips.filter(t => t.id !== id);
+      if (state.currentTripId === id) state.currentTripId = null;
+      save(); render();
+      toast('旅行本已经删掉啦 🗑');
+      break;
+    }
+
+    case 'del-entry': {
+      if (!confirm('确定要撕掉这一页吗？')) return;
+      const trip = currentTrip();
+      if (!trip) return;
+      trip.entries = trip.entries.filter(x => x.id !== id);
+      save(); render();
+      toast('已经撕掉这一页啦 🗑');
+      break;
+    }
+
+    case 'like': {
+      const trip = currentTrip();
+      if (!trip) return;
+      const entry = trip.entries.find(x => x.id === id);
+      if (!entry) return;
+      entry.likes = entry.likes || [];
+      const i = entry.likes.indexOf(me().id);
+      if (i >= 0) entry.likes.splice(i, 1);
+      else entry.likes.push(me().id);
+      save(); render();
+      break;
+    }
+
+    case 'send-comment': {
+      const input = document.getElementById('ci-' + id);
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+      const trip = currentTrip();
+      if (!trip) return;
+      const entry = trip.entries.find(x => x.id === id);
+      if (!entry) return;
+      entry.comments = entry.comments || [];
+      entry.comments.push({
+        id: uid(),
+        authorId: me().id,
+        authorName: me().name,
+        authorAvatar: me().avatar,
+        text,
+        time: Date.now()
+      });
+      save(); render();
+      const again = document.getElementById('ci-' + id);
+      if (again) again.focus();
+      break;
+    }
+
+    case 'open-photo':
+      $('#lightboxImg').src = el.dataset.src;
+      $('#lightbox').classList.add('show');
+      break;
+
+    case 'open-invite':
+      openInviteModal();
+      break;
+  }
+});
+
+/* 回车发送留言 */
+document.addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  const input = ev.target;
+  if (input.tagName === 'INPUT' && input.id && input.id.startsWith('ci-')){
+    ev.preventDefault();
+    const btn = document.querySelector(`[data-action="send-comment"][data-id="${input.id.slice(3)}"]`);
+    if (btn) btn.click();
+  }
+});
+
+/* 关闭弹窗 */
+document.addEventListener('click', ev => {
+  if (ev.target.closest('[data-close]')) {
+    ev.target.closest('.mask')?.classList.remove('show');
+  }
+  if (ev.target.classList.contains('mask')) {
+    ev.target.classList.remove('show');
+  }
+});
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape'){
+    $$('.mask.show').forEach(m => {
+      if (m.id === 'maskProfile' && !state.me.name) return;
+      m.classList.remove('show');
+    });
+    $('#lightbox').classList.remove('show');
+  }
+});
+
+$('#lightbox').addEventListener('click', () => $('#lightbox').classList.remove('show'));
+
+/* ==========================================================
+   悬浮「＋」
+   ========================================================== */
+$('#fab').addEventListener('click', () => {
+  if ($('#fab').dataset.mode === 'entry') openEntryModal();
+  else openTripModal();
+});
+
+/* ==========================================================
+   我的资料
+   ========================================================== */
+let pickedAvatar = '🐰';
+
+function openProfileModal(isFirst){
+  $('#profileTitle').textContent = isFirst ? '👋 先认识一下你吧' : '✎ 改改我的样子';
+  $('#pName').value = me().name || '';
+  pickedAvatar = me().avatar || '🐰';
+
+  $('#avatarGrid').innerHTML = AVATARS.map(a =>
+    `<button type="button" class="avatar-opt ${a === pickedAvatar ? 'on' : ''}" data-av="${a}">${a}</button>`
+  ).join('');
+
+  $('#avatarGrid').querySelectorAll('.avatar-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      pickedAvatar = btn.dataset.av;
+      $('#avatarGrid').querySelectorAll('.avatar-opt').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+    });
+  });
+
+  $('#profileClose').style.display = isFirst ? 'none' : '';
+  $('#maskProfile').classList.add('show');
+  if (isFirst) setTimeout(() => $('#pName').focus(), 260);
+}
+
+$('#btnMe').addEventListener('click', () => openProfileModal(false));
+
+$('#btnSaveProfile').addEventListener('click', () => {
+  const name = $('#pName').value.trim();
+  if (!name){ toast('先给自己起个名字吧 ✍️'); $('#pName').focus(); return; }
+
+  const oldName = me().name;
+  me().name = name;
+  me().avatar = pickedAvatar;
+
+  state.trips.forEach(t => {
+    t.members.forEach(m => {
+      if (m.id === me().id){ m.name = name; m.avatar = pickedAvatar; }
+    });
+    t.entries.forEach(e => {
+      if (e.authorId === me().id){ e.authorName = name; e.authorAvatar = pickedAvatar; }
+      (e.comments || []).forEach(c => {
+        if (c.authorId === me().id){ c.authorName = name; c.authorAvatar = pickedAvatar; }
+      });
+    });
+  });
+
+  const wasFirst = !oldName;
+  save();
+
+  if (wasFirst){
+    seedData();
+    $('#maskProfile').classList.remove('show');
+    render();
+    toast(`欢迎你，${name} ${pickedAvatar}`);
+  } else {
+    $('#maskProfile').classList.remove('show');
+    render();
+    toast('换好啦 ✨');
+  }
+});
+
+/* ==========================================================
+   调色盘
+   ========================================================== */
+function openPaletteModal(){
+  const grid = $('#paletteGrid');
+  grid.innerHTML = PALETTE.map(c =>
+    `<button type="button" class="swatch ${c.toLowerCase() === state.theme.toLowerCase() ? 'on' : ''}"
+             style="background:${c}" data-color="${c}" title="${c}"></button>`
+  ).join('');
+
+  grid.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      const c = sw.dataset.color;
+      applyTheme(c);
+      save();
+      grid.querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+      sw.classList.add('on');
+      $('#customColor').value = c;
+    });
+  });
+
+  $('#customColor').value = /^#[0-9a-f]{6}$/i.test(state.theme) ? state.theme : '#FFF6E9';
+  $('#maskPalette').classList.add('show');
+}
+
+$('#btnPalette').addEventListener('click', openPaletteModal);
+
+$('#customColor').addEventListener('input', e => {
+  applyTheme(e.target.value);
+  save();
+  $('#paletteGrid').querySelectorAll('.swatch').forEach(s => s.classList.remove('on'));
+});
+
+/* ==========================================================
+   新增记录
+   ========================================================== */
+let pendingPhotos = [];
+let pickedMood = '';
+let pickedWeather = '';
+let pickedTags = new Set();
+
+function buildChips(container, list, onPick, extraClass = ''){
+  container.innerHTML = list.map(v =>
+    `<button type="button" class="chip ${extraClass}" data-v="${esc(v)}">${esc(v)}</button>`
+  ).join('');
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => onPick(chip.dataset.v, chip));
+  });
+}
+
+function openEntryModal(){
+  const trip = currentTrip();
+  if (!trip){ toast('先进入一本旅行吧'); return; }
+
+  pendingPhotos = [];
+  pickedMood = '';
+  pickedWeather = '';
+  pickedTags = new Set();
+
+  $('#fPlace').value = trip.place || '';
+  $('#fTime').value = nowLocalInput();
+  $('#fText').value = '';
+  $('#fTagCustom').value = '';
+  renderUploadPreview();
+
+  buildChips($('#moodChips'), MOODS, (v, chip) => {
+    pickedMood = (pickedMood === v) ? '' : v;
+    $('#moodChips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    if (pickedMood) chip.classList.add('on');
+  });
+
+  buildChips($('#weatherChips'), WEATHERS, (v, chip) => {
+    pickedWeather = (pickedWeather === v) ? '' : v;
+    $('#weatherChips').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    if (pickedWeather) chip.classList.add('on');
+  }, 'blue');
+
+  buildChips($('#tagChips'), CATS, (v, chip) => {
+    if (pickedTags.has(v)){ pickedTags.delete(v); chip.classList.remove('on'); }
+    else { pickedTags.add(v); chip.classList.add('on'); }
+  }, 'sage');
+
+  $('#maskEntry').classList.add('show');
+  setTimeout(() => $('#fPlace').focus(), 240);
+}
+
+function renderUploadPreview(){
+  const box = $('#uploadPreview');
+  box.innerHTML = pendingPhotos.map((p, i) => `
+    <div class="thumb">
+      <img src="${p}" alt="">
+      <button type="button" data-remove="${i}">✕</button>
+    </div>`).join('');
+  box.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      pendingPhotos.splice(Number(btn.dataset.remove), 1);
+      renderUploadPreview();
+    });
+  });
+}
+
+$('#uploader').addEventListener('click', () => $('#fileInput').click());
+
+$('#fileInput').addEventListener('change', async ev => {
+  const files = [...ev.target.files];
+  if (!files.length) return;
+  toast('正在处理照片…');
+  for (const f of files){
+    if (!f.type.startsWith('image/')) continue;
+    const data = await compressImage(f, 900, 0.68);
+    if (data) pendingPhotos.push(data);
+  }
+  renderUploadPreview();
+  ev.target.value = '';
+});
+
+$('#fTagCustom').addEventListener('keydown', ev => {
+  if (ev.key !== 'Enter') return;
+  ev.preventDefault();
+  const v = ev.target.value.trim();
+  if (!v) return;
+  ev.target.value = '';
+  if (pickedTags.has(v)) return;
+  pickedTags.add(v);
+  const chip = document.createElement('button');
+  chip.type = 'button';
+  chip.className = 'chip sage on';
+  chip.textContent = v;
+  chip.addEventListener('click', () => {
+    pickedTags.delete(v);
+    chip.remove();
+  });
+  $('#tagChips').appendChild(chip);
+});
+
+$('#btnSaveEntry').addEventListener('click', () => {
+  const trip = currentTrip();
+  if (!trip) return;
+
+  const place = $('#fPlace').value.trim();
+  const time  = $('#fTime').value || nowLocalInput();
+  const text  = $('#fText').value.trim();
+
+  if (!pendingPhotos.length && !text){
+    toast('至少放一张照片或写点什么吧 ✍️');
+    return;
+  }
+
+  trip.entries.push({
+    id: uid(),
+    photos: [...pendingPhotos],
+    place,
+    time,
+    mood: pickedMood,
+    weather: pickedWeather,
+    tags: [...pickedTags],
+    text,
+    authorId: me().id,
+    authorName: me().name,
+    authorAvatar: me().avatar,
+    likes: [],
+    comments: []
+  });
+
+  if (!trip.cover && pendingPhotos.length) trip.cover = pendingPhotos[0];
+
+  save();
+  $('#maskEntry').classList.remove('show');
+  render();
+  toast('已经贴到日记本上啦 📖');
+});
+
+/* ==========================================================
+   新建旅行
+   ========================================================== */
+let pendingCover = '';
+
+function openTripModal(){
+  pendingCover = '';
+  $('#tTitle').value = '';
+  $('#tStart').value = todayInput();
+  $('#tEnd').value = '';
+  $('#tPlace').value = '';
+  $('#coverPreview').innerHTML = '';
+  $('#maskTrip').classList.add('show');
+  setTimeout(() => $('#tTitle').focus(), 240);
+}
+
+$('#coverUploader').addEventListener('click', () => $('#coverInput').click());
+
+$('#coverInput').addEventListener('change', async ev => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  pendingCover = await compressImage(f, 900, 0.7);
+  $('#coverPreview').innerHTML = `<div class="thumb"><img src="${pendingCover}" alt=""></div>`;
+  ev.target.value = '';
+});
+
+$('#btnSaveTrip').addEventListener('click', () => {
+  const title = $('#tTitle').value.trim();
+  if (!title){ toast('给旅行起个名字吧 ✍️'); $('#tTitle').focus(); return; }
+
+  const raw = title.replace(/[^\w\u4e00-\u9fa5]/g, '').slice(0, 5).toUpperCase() || 'TRIP';
+
+  const trip = {
+    id: uid(),
+    title,
+    start: $('#tStart').value || todayInput(),
+    end: $('#tEnd').value || '',
+    place: $('#tPlace').value.trim(),
+    cover: pendingCover,
+    inviteCode: raw + '-' + Math.floor(Math.random() * 9000 + 1000),
+    members: [{ id: me().id, name: me().name, avatar: me().avatar, role: 'owner' }],
+    board: { plan:'', checklist:[], notes:'', letter:'' },
+    entries: []
+  };
+
+  state.trips.unshift(trip);
+  state.currentTripId = trip.id;
+  boardTab = 'plan';
+  letterOpen = false;
+  save();
+  $('#maskTrip').classList.remove('show');
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('新的旅行本做好啦 ✈️');
+});
+
+/* ==========================================================
+   邀请
+   ========================================================== */
+function openInviteModal(){
+  const trip = currentTrip();
+  if (!trip) return;
+
+  $('#inviteCode').textContent = trip.inviteCode || 'TRIP-0000';
+  $('#memberList').innerHTML = trip.members.map(m => `
+    <div class="member-row">
+      <span class="mav">${m.avatar}</span>
+      <span class="mname">${esc(m.name)}</span>
+      <span class="role ${m.role === 'owner' ? 'owner' : ''}">
+        ${m.role === 'owner' ? '创建者' : '一起写'}
+      </span>
+    </div>`).join('');
+
+  $('#maskInvite').classList.add('show');
+}
+
+$('#btnCopyCode').addEventListener('click', async () => {
+  const code = $('#inviteCode').textContent;
+  try {
+    await navigator.clipboard.writeText(code);
+    toast('口令复制好啦，发给朋友吧 💌');
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = code;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    toast('口令复制好啦 💌');
+  }
+});
+
+/* ==========================================================
+   加入旅行
+   ========================================================== */
+$('#btnJoin').addEventListener('click', () => {
+  $('#joinCode').value = '';
+  $('#maskJoin').classList.add('show');
+  setTimeout(() => $('#joinCode').focus(), 240);
+});
+
+$('#btnDoJoin').addEventListener('click', () => {
+  const code = $('#joinCode').value.trim().toUpperCase();
+  if (!code){ toast('输入口令吧 🔑'); return; }
+
+  const trip = state.trips.find(t => (t.inviteCode || '').toUpperCase() === code);
+  if (!trip){ toast('没有找到这个口令的旅行 😢'); return; }
+
+  if (!trip.members.some(m => m.id === me().id)){
+    trip.members.push({ id: me().id, name: me().name, avatar: me().avatar, role: 'editor' });
+  }
+
+  state.currentTripId = trip.id;
+  boardTab = 'plan';
+  letterOpen = false;
+  save();
+  $('#maskJoin').classList.remove('show');
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast(`加入「${trip.title}」成功 🎉`);
+});
+
+/* ==========================================================
+   启动
+   ========================================================== */
+function boot(){
+  load();
+  applyTheme(state.theme);
+  if (!state.me.name){
+    openProfileModal(true);
+  } else {
+    seedData();
+    render();
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
