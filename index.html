@@ -2331,25 +2331,66 @@ $('#btnJoin').addEventListener('click', () => {
   setTimeout(() => $('#joinCode').focus(), 240);
 });
 
-$('#btnDoJoin').addEventListener('click', () => {
+$('#btnDoJoin').addEventListener('click', async () => {
   const code = $('#joinCode').value.trim().toUpperCase();
   if (!code){ toast('输入口令吧 🔑'); return; }
 
-  const trip = state.trips.find(t => (t.inviteCode || '').toUpperCase() === code);
-  if (!trip){ toast('没有找到这个口令的旅行 😢'); return; }
+  toast('正在查询...'); // 给用户一个反馈
 
-  if (!trip.members.some(m => m.id === me().id)){
-    trip.members.push({ id: me().id, name: me().name, avatar: me().avatar, role: 'editor' });
+  // 1. 从 Supabase 云端直接查询这个口令
+  const { data: tripData, error: tripErr } = await sb
+    .from('trips')
+    .select('id, title, invite_code')
+    .ilike('invite_code', code) // 使用 ilike 忽略大小写匹配
+    .maybeSingle();
+
+  if (tripErr) {
+    console.error(tripErr);
+    toast('查询失败，请检查网络或RLS策略');
+    return;
   }
 
-  state.currentTripId = trip.id;
+  if (!tripData){
+    toast('没有找到这个口令的旅行 😢');
+    return;
+  }
+
+  // 2. 检查是否已经加入过，避免重复添加
+  const { data: memberData } = await sb
+    .from('trip_members')
+    .select('id')
+    .eq('trip_id', tripData.id)
+    .eq('user_id', me().id)
+    .maybeSingle();
+
+  if (memberData) {
+    toast('你已经在这本旅行日记里啦 🎉');
+  } else {
+    // 3. 把用户加入 trip_members 表
+    const { error: joinErr } = await sb
+      .from('trip_members')
+      .insert({
+        trip_id: tripData.id,
+        user_id: me().id,
+        role: 'editor'
+      });
+
+    if (joinErr) {
+      console.error(joinErr);
+      toast('加入失败：' + joinErr.message);
+      return;
+    }
+  }
+
+  // 4. 重新拉取云端数据，并进入这本旅行
+  await loadTrips();
+  currentTripId = tripData.id;
   boardTab = 'plan';
   letterOpen = false;
-  save();
   $('#maskJoin').classList.remove('show');
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  toast(`加入「${trip.title}」成功 🎉`);
+  toast(`加入「${tripData.title}」成功 🎉`);
 });
 
 /* ==========================================================
