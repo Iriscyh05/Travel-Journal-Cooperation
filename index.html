@@ -383,8 +383,6 @@ main{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:8px clam
 .field{margin-bottom:20px}
 .field > label{display:block;font-size:12.5px;letter-spacing:1.5px;color:var(--ink-soft);margin-bottom:8px;}
 .field input[type=text],
-.field input[type=email],
-.field input[type=password],
 .field input[type=datetime-local],
 .field input[type=date],
 .field input:not([type]),
@@ -563,7 +561,6 @@ footer.site{position:relative;z-index:1;text-align:center;font-size:12.5px;color
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-danger" id="btnLogout" style="margin-right:auto" type="button">退出登录</button>
       <button class="btn btn-primary" id="btnSaveProfile" type="button">就这样 ✨</button>
     </div>
   </div>
@@ -698,7 +695,7 @@ footer.site{position:relative;z-index:1;text-align:center;font-size:12.5px;color
     <div class="tape tape-tr yellow"></div>
     <button class="close-x" data-close>✕</button>
     <h3>💌 邀请朋友一起写</h3>
-    <p class="hint">把口令发给朋友，他们注册登录后输入口令就能加入这本旅行日记。<br>朋友的名字和头像由他们自己设置哦～</p>
+    <p class="hint">把口令发给朋友，他们打开网页后输入口令就能加入这本旅行日记。<br>朋友的名字和头像由他们自己设置哦～</p>
 
     <div class="invite-box">
       <div class="invite-code" id="inviteCode">—</div>
@@ -859,7 +856,7 @@ let boardTab = 'plan'
 let letterOpen = false
 
 /* ============================================================
-   本地偏好（theme / memoDismissed 只存本地）
+   本地偏好
    ============================================================ */
 const PREF_KEY = 'travel-journal-prefs-v1'
 function savePrefs(){
@@ -879,7 +876,7 @@ function loadPrefs(){
 }
 
 /* ============================================================
-   Supabase 操作
+   状态读取
    ============================================================ */
 const me = () => state.me
 const currentTrip = () => state.trips.find(t => t.id === state.currentTripId) || null
@@ -904,7 +901,9 @@ function isTripEnded(trip){
   return Date.now() > end.getTime()
 }
 
-/* ---------- 上传照片到 Storage ---------- */
+/* ============================================================
+   Supabase 操作
+   ============================================================ */
 async function uploadPhoto(blob){
   if (!blob) return null
   const path = `${state.me.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`
@@ -916,7 +915,6 @@ async function uploadPhoto(blob){
   return data.publicUrl
 }
 
-/* ---------- 加载我的所有旅行 ---------- */
 async function loadTrips(){
   const { data, error } = await supabase
     .from('trips')
@@ -984,13 +982,11 @@ async function loadTrips(){
     }))
   }))
 
-  // 如果当前的 trip 被删了，退回列表
   if (state.currentTripId && !state.trips.find(t => t.id === state.currentTripId)) {
     state.currentTripId = null
   }
 }
 
-/* ---------- 保存留言板（用 update，无则 insert） ---------- */
 async function saveBoard(tripId, patch){
   const { data, error } = await supabase
     .from('boards')
@@ -1047,7 +1043,7 @@ function renderMemo(){
     <p>它不是相册，也不是朋友圈。<br>是用来装你和朋友一起走过的路、吃过的饭、犯过的傻。</p>
     <ul class="memo-list">
       <li><span class="num">1️⃣</span><span>点右下角 <b>「＋ 新旅行本」</b>，给这趟旅程开一本小册子</span></li>
-      <li><span class="num">2️⃣</span><span>把口令发给朋友，他们注册登录后输入口令就能一起进来</span></li>
+      <li><span class="num">2️⃣</span><span>把口令发给朋友，他们打开网页输入口令就能一起进来</span></li>
       <li><span class="num">3️⃣</span><span>每张照片都能标地点、时间、心情，还能贴「美食 / 合照 / 搞笑」这类小标签</span></li>
       <li><span class="num">4️⃣</span><span>留言板可以一起写计划、列清单、记注意事项，谁都能改</span></li>
       <li><span class="num">5️⃣</span><span>出发前写一封给小队的信，旅行结束后才打得开 💌</span></li>
@@ -1486,7 +1482,6 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'Escape'){
     $$('.mask.show').forEach(m => {
       if (m.id === 'maskProfile' && !state.me.name) return
-      if (m.id === 'maskAuth') return
       m.classList.remove('show')
     })
     $('#lightbox').classList.remove('show')
@@ -1496,97 +1491,18 @@ document.addEventListener('keydown', ev => {
 $('#lightbox').addEventListener('click', () => $('#lightbox').classList.remove('show'))
 
 /* ============================================================
-   认证
+   用户初始化（匿名自动登录）
    ============================================================ */
-let authMode = 'login'
-
-function setAuthMode(mode){
-  authMode = mode
-  if (mode === 'login'){
-    $('#authTitle').textContent = '🔐 登录旅搭日记'
-    $('#authHint').textContent = '输入邮箱和密码，继续你的旅行本'
-    $('#btnAuthSubmit').textContent = '登录'
-    $('#btnAuthSwitch').textContent = '没有账号？去注册'
-  } else {
-    $('#authTitle').textContent = '✨ 注册旅搭日记'
-    $('#authHint').textContent = '注册一个账号，把旅行本存到云端'
-    $('#btnAuthSubmit').textContent = '注册'
-    $('#btnAuthSwitch').textContent = '已有账号？去登录'
-  }
-}
-
-function showAuthModal(){
-  $('#authEmail').value = ''
-  $('#authPassword').value = ''
-  setAuthMode('login')
-  $('#maskAuth').classList.add('show')
-  setTimeout(() => $('#authEmail').focus(), 260)
-}
-
-$('#btnAuthSwitch').addEventListener('click', () => {
-  setAuthMode(authMode === 'login' ? 'signup' : 'login')
-})
-
-$('#btnAuthSubmit').addEventListener('click', async () => {
-  const email = $('#authEmail').value.trim()
-  const password = $('#authPassword').value
-
-  if (!email){ toast('请输入邮箱'); return }
-  if (!password || password.length < 6){ toast('密码至少 6 位'); return }
-
-  const btn = $('#btnAuthSubmit')
-  btn.disabled = true
-  const oldText = btn.textContent
-  btn.textContent = authMode === 'login' ? '登录中…' : '注册中…'
-
-  try {
-    if (authMode === 'login'){
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
-    } else {
-      const { data, error } = await supabase.auth.signUp({ email, password })
-      if (error) throw error
-      if (!data.session){
-        toast('注册成功！请去邮箱点确认链接再回来登录')
-        setAuthMode('login')
-        return
-      }
-    }
-    // onAuthStateChange 会负责后续
-  } catch (e){
-    toast(e.message || '出错了')
-  } finally {
-    btn.disabled = false
-    btn.textContent = oldText
-  }
-})
-
-$('#btnLogout').addEventListener('click', async () => {
-  if (!confirm('确定退出登录吗？')) return
-  await supabase.auth.signOut()
-})
-
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (event === 'SIGNED_IN' && session){
-    $('#maskAuth').classList.remove('show')
-    await afterLogin(session.user)
-  } else if (event === 'SIGNED_OUT'){
-    state.me = { id: '', name: '', avatar: '🐰' }
-    state.trips = []
-    state.currentTripId = null
-    render()
-    showAuthModal()
-  }
-})
-
-async function afterLogin(user){
+async function setupUser(user){
   showLoading('正在读你的旅行本…')
   try {
-    let { data: profile } = await supabase
+    let { data: profile, error: pErr } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .maybeSingle()
+
+    if (pErr) console.error(pErr)
 
     if (!profile){
       const { error } = await supabase.from('profiles').insert({ id: user.id })
@@ -1619,7 +1535,7 @@ async function afterLogin(user){
    悬浮「＋」
    ============================================================ */
 $('#fab').addEventListener('click', () => {
-  if (!state.me.id){ showAuthModal(); return }
+  if (!state.me.id){ toast('正在初始化，稍等一下下～'); return }
   if ($('#fab').dataset.mode === 'entry') openEntryModal()
   else openTripModal()
 })
@@ -1652,7 +1568,7 @@ function openProfileModal(isFirst){
 }
 
 $('#btnMe').addEventListener('click', () => {
-  if (!state.me.id){ showAuthModal(); return }
+  if (!state.me.id){ toast('正在初始化，稍等一下下～'); return }
   openProfileModal(false)
 })
 
@@ -1722,7 +1638,7 @@ $('#customColor').addEventListener('input', e => {
 /* ============================================================
    新增记录
    ============================================================ */
-let pendingPhotos = []  // [{ blob, url }]
+let pendingPhotos = []
 let pickedMood = ''
 let pickedWeather = ''
 let pickedTags = new Set()
@@ -1845,14 +1761,12 @@ $('#btnSaveEntry').addEventListener('click', async () => {
   btn.textContent = pendingPhotos.length ? '上传中…' : '保存中…'
 
   try {
-    // 上传所有照片
     const urls = []
     for (const p of pendingPhotos){
       const url = await uploadPhoto(p.blob)
       if (url) urls.push(url)
     }
 
-    // entry_time 转成 ISO
     let isoTime = time
     if (time && !time.includes('Z') && time.length <= 16){
       isoTime = new Date(time).toISOString()
@@ -1872,7 +1786,6 @@ $('#btnSaveEntry').addEventListener('click', async () => {
 
     if (error) throw error
 
-    // 如果旅行还没有封面，用第一张图
     if (!trip.cover && urls[0]){
       await supabase.from('trips').update({ cover_url: urls[0] }).eq('id', trip.id)
     }
@@ -1893,7 +1806,7 @@ $('#btnSaveEntry').addEventListener('click', async () => {
 /* ============================================================
    新建旅行
    ============================================================ */
-let pendingCover = null  // { blob, url }
+let pendingCover = null
 
 function openTripModal(){
   pendingCover = null
@@ -1921,7 +1834,6 @@ $('#coverInput').addEventListener('change', async ev => {
 
 function generateCode(title){
   const raw = title.replace(/[^\w\u4e00-\u9fa5]/g, '').slice(0, 5).toUpperCase() || 'TRIP'
-  // 中文可能全被过滤，兜个底
   const safe = raw || 'TRIP'
   return safe + '-' + Math.floor(Math.random() * 9000 + 1000)
 }
@@ -1936,13 +1848,11 @@ $('#btnSaveTrip').addEventListener('click', async () => {
   btn.textContent = '创建中…'
 
   try {
-    // 上传封面
     let coverUrl = null
     if (pendingCover?.blob){
       coverUrl = await uploadPhoto(pendingCover.blob)
     }
 
-    // 建 trip
     const { data: tripData, error: tripErr } = await supabase
       .from('trips')
       .insert({
@@ -1959,7 +1869,6 @@ $('#btnSaveTrip').addEventListener('click', async () => {
 
     if (tripErr) throw tripErr
 
-    // 加成员
     const { error: memErr } = await supabase.from('trip_members').insert({
       trip_id: tripData.id,
       user_id: state.me.id,
@@ -1967,7 +1876,6 @@ $('#btnSaveTrip').addEventListener('click', async () => {
     })
     if (memErr) console.error(memErr)
 
-    // 建空留言板
     const { error: bErr } = await supabase.from('boards').insert({ trip_id: tripData.id })
     if (bErr) console.error(bErr)
 
@@ -2028,7 +1936,7 @@ $('#btnCopyCode').addEventListener('click', async () => {
    加入旅行
    ============================================================ */
 $('#btnJoin').addEventListener('click', () => {
-  if (!state.me.id){ showAuthModal(); return }
+  if (!state.me.id){ toast('正在初始化，稍等一下下～'); return }
   $('#joinCode').value = ''
   $('#maskJoin').classList.add('show')
   setTimeout(() => $('#joinCode').focus(), 240)
@@ -2078,7 +1986,7 @@ $('#btnDoJoin').addEventListener('click', async () => {
 })
 
 /* ============================================================
-   启动
+   启动（匿名自动登录）
    ============================================================ */
 async function boot(){
   loadPrefs()
@@ -2086,17 +1994,29 @@ async function boot(){
 
   showLoading('正在打开旅行本…')
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    let { data: { session } } = await supabase.auth.getSession()
+
     if (!session){
-      hideLoading()
-      showAuthModal()
-      return
+      const { data, error } = await supabase.auth.signInAnonymously()
+      if (error){
+        hideLoading()
+        console.error(error)
+        $('#main').innerHTML = `
+          <div class="empty">
+            <span class="big">😢</span>
+            连不上服务器<br>
+            <small style="font-size:12px">请确认 Supabase 后台已开启 Anonymous Sign-ins</small>
+          </div>`
+        return
+      }
+      session = data.session
     }
-    await afterLogin(session.user)
+
+    await setupUser(session.user)
   } catch (e){
     console.error(e)
     hideLoading()
-    showAuthModal()
+    toast('出错了：' + (e.message || e))
   }
 }
 
