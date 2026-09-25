@@ -1574,11 +1574,13 @@ function renderTrips(){
     <div class="page-title">我的旅行本 <small>共 ${state.trips.length} 本</small></div>
     <div class="trip-grid">
       ${state.trips.map(t => {
-        const photoCount = t.entries.reduce((n, e) => n + (e.photos?.length || 0), 0);
-        const commentCount = t.entries.reduce((n, e) => n + (e.comments?.length || 0), 0);
+        // ✅ 修复：加上 || [] 防止白屏崩溃
+        const photoCount = (t.entries || []).reduce((n, e) => n + ((e.photos || []).length || 0), 0);
+        const commentCount = (t.entries || []).reduce((n, e) => n + ((e.comments || []).length || 0), 0);
         const coverInner = t.cover ? `<img src="${t.cover}" alt="">` : `<div class="noimg">🧳</div>`;
         const corners = ['🌸','⭐','🍃','☁️'];
-        const corner = corners[(t.title.length + t.entries.length) % corners.length];
+        // ✅ 修复：加上 || [] 防止 t.entries 为空
+        const corner = corners[(t.title.length + (t.entries || []).length) % corners.length];
         return `
         <article class="trip-card" data-action="open-trip" data-id="${t.id}">
           <div class="pin"></div>
@@ -1588,7 +1590,7 @@ function renderTrips(){
             <h3>${esc(t.title)}</h3>
             <div class="meta">📅 ${fmtD(t.start)}${t.end ? ' – ' + fmtD(t.end) : ''}</div>
             <div class="meta">📍 ${esc(t.place || '还没写目的地')}</div>
-            <div class="members">${t.members.map(m => m.avatar).join(' ')}</div>
+            <div class="members">${(t.members || []).map(m => m.avatar).join(' ')}</div>
             <div class="stats">🌸 ${photoCount} 张照片 · 💬 ${commentCount} 条留言</div>
           </div>
           <span class="corner">${corner}</span>
@@ -1599,7 +1601,8 @@ function renderTrips(){
 
 /* ---------- 旅行详情 ---------- */
 function renderTrip(trip){
-  const entries = [...trip.entries].sort((a, b) => new Date(b.time) - new Date(a.time));
+  // ✅ 修复：加上 || [] 防止白屏崩溃
+  const entries = [...(trip.entries || [])].sort((a, b) => new Date(b.time) - new Date(a.time));
 
   const timelineHTML = entries.length
     ? `<div class="timeline">${entries.map((e, i) => renderEntry(e, i)).join('')}</div>`
@@ -1613,8 +1616,8 @@ function renderTrip(trip){
       <div class="sub">📅 ${fmtD(trip.start)}${trip.end ? ' – ' + fmtD(trip.end) : ''} &nbsp;·&nbsp; 📍 ${esc(trip.place || '还没写目的地')}</div>
       <div class="head-row">
         <div class="avatar-stack">
-          ${trip.members.map(m => `<div class="av" title="${esc(m.name)}">${m.avatar}</div>`).join('')}
-          <span class="tip">${trip.members.length} 位伙伴一起写</span>
+          ${(trip.members || []).map(m => `<div class="av" title="${esc(m.name)}">${m.avatar}</div>`).join('')}
+          <span class="tip">${(trip.members || []).length} 位伙伴一起写</span>
         </div>
         <button class="btn btn-sage" data-action="open-invite">💌 邀请朋友</button>
       </div>
@@ -1899,7 +1902,8 @@ document.addEventListener('click', ev => {
       if (!confirm('确定要撕掉这一页吗？')) return;
       const trip = currentTrip();
       if (!trip) return;
-      trip.entries = trip.entries.filter(x => x.id !== id);
+      // ✅ 修复：加上 || [] 防止报错
+      trip.entries = (trip.entries || []).filter(x => x.id !== id);
       save(); render();
       toast('已经撕掉这一页啦 🗑');
       break;
@@ -1908,7 +1912,8 @@ document.addEventListener('click', ev => {
     case 'like': {
       const trip = currentTrip();
       if (!trip) return;
-      const entry = trip.entries.find(x => x.id === id);
+      // ✅ 修复：加上 || []
+      const entry = (trip.entries || []).find(x => x.id === id);
       if (!entry) return;
       entry.likes = entry.likes || [];
       const i = entry.likes.indexOf(me().id);
@@ -1925,7 +1930,8 @@ document.addEventListener('click', ev => {
       if (!text) return;
       const trip = currentTrip();
       if (!trip) return;
-      const entry = trip.entries.find(x => x.id === id);
+      // ✅ 修复：加上 || []
+      const entry = (trip.entries || []).find(x => x.id === id);
       if (!entry) return;
       entry.comments = entry.comments || [];
       entry.comments.push({
@@ -2030,11 +2036,12 @@ $('#btnSaveProfile').addEventListener('click', () => {
   me().name = name;
   me().avatar = pickedAvatar;
 
-  state.trips.forEach(t => {
-    t.members.forEach(m => {
+  // ✅ 修复：加上 || [] 防止遍历旧数据报错
+  (state.trips || []).forEach(t => {
+    (t.members || []).forEach(m => {
       if (m.id === me().id){ m.name = name; m.avatar = pickedAvatar; }
     });
-    t.entries.forEach(e => {
+    (t.entries || []).forEach(e => {
       if (e.authorId === me().id){ e.authorName = name; e.authorAvatar = pickedAvatar; }
       (e.comments || []).forEach(c => {
         if (c.authorId === me().id){ c.authorName = name; c.authorAvatar = pickedAvatar; }
@@ -2206,6 +2213,7 @@ $('#btnSaveEntry').addEventListener('click', () => {
     return;
   }
 
+  trip.entries = trip.entries || []; // 安全处理
   trip.entries.push({
     id: uid(),
     photos: [...pendingPhotos],
@@ -2294,7 +2302,7 @@ function openInviteModal(){
   if (!trip) return;
 
   $('#inviteCode').textContent = trip.inviteCode || 'TRIP-0000';
-  $('#memberList').innerHTML = trip.members.map(m => `
+  $('#memberList').innerHTML = (trip.members || []).map(m => `
     <div class="member-row">
       <span class="mav">${m.avatar}</span>
       <span class="mname">${esc(m.name)}</span>
@@ -2338,6 +2346,7 @@ $('#btnDoJoin').addEventListener('click', () => {
   const trip = state.trips.find(t => (t.inviteCode || '').toUpperCase() === code);
   if (!trip){ toast('没有找到这个口令的旅行 😢'); return; }
 
+  trip.members = trip.members || [];
   if (!trip.members.some(m => m.id === me().id)){
     trip.members.push({ id: me().id, name: me().name, avatar: me().avatar, role: 'editor' });
   }
