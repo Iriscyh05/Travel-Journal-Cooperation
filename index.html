@@ -973,7 +973,6 @@ footer.site{
   .trip-card .pin{right:48px}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -1220,10 +1219,6 @@ footer.site{
    旅搭日记 · 逻辑
    ========================================================== */
 const LS_KEY = 'travel-journal-v3';
-const SUPABASE_URL = 'https://ojbxrxubxnheqenjxxrl.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_rBORIGz1KpQZhElXVVLy-Q_cc8zW2f3';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let syncTimer;
 
 /* ---------- 小工具 ---------- */
 const $  = s => document.querySelector(s);
@@ -1290,15 +1285,6 @@ function compressImage(file, maxW = 900, quality = 0.68){
     reader.onerror = () => resolve('');
     reader.readAsDataURL(file);
   });
-}
-
-async function uploadPhoto(dataUrl){
-  const blob = await (await fetch(dataUrl)).blob();
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
-  const { error } = await sb.storage.from('photos').upload(path, blob);
-  if (error){ console.warn(error); return dataUrl; }   // 失败就退回 base64
-  const { data } = sb.storage.from('photos').getPublicUrl(path);
-  return data.publicUrl;
 }
 
 /* ---------- 生成占位插画（示例数据用） ---------- */
@@ -1369,13 +1355,6 @@ let letterOpen = false;
 function save(){
   try { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
   catch (e) { toast('存储空间快满了，少放几张照片吧～'); }
-
-  // ↓↓↓ 新增这三行 ↓↓↓
-  const trip = currentTrip();
-  if (trip && state.me.name){
-    clearTimeout(syncTimer);
-    syncTimer = setTimeout(() => cloudUpsertTrip(trip), 600);
-  }
 }
 function load(){
   try {
@@ -1388,24 +1367,6 @@ function load(){
     if (Array.isArray(d.trips)) state.trips = d.trips;
     if (typeof d.seeded === 'boolean') state.seeded = d.seeded;
   } catch (e) { /* 数据损坏则忽略 */ }
-}
-async function cloudUpsertTrip(trip){
-  if (!trip) return;
-  const { error } = await sb.from('trips').upsert({
-    id: trip.id,
-    invite_code: trip.inviteCode,
-    title: trip.title,
-    data: trip,
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'id' });
-  if (error) console.warn('同步失败：', error.message);
-}
-
-async function cloudFetchByCode(code){
-  const { data, error } = await sb.from('trips')
-    .select('data').eq('invite_code', code.toUpperCase()).maybeSingle();
-  if (error){ console.warn(error); return null; }
-  return data ? data.data : null;
 }
 
 /* ---------- 主题 ---------- */
@@ -1929,7 +1890,6 @@ document.addEventListener('click', ev => {
       if (!confirm(`确定要删除「${trip.title}」这本旅行吗？\n里面的照片和留言都会一起消失哦，删掉就找不回来了。`)) return;
       state.trips = state.trips.filter(t => t.id !== id);
       if (state.currentTripId === id) state.currentTripId = null;
-      sb.from('trips').delete().eq('id', id);
       save(); render();
       toast('旅行本已经删掉啦 🗑');
       break;
@@ -2233,7 +2193,7 @@ $('#fTagCustom').addEventListener('keydown', ev => {
   $('#tagChips').appendChild(chip);
 });
 
-$('#btnSaveEntry').addEventListener('click',  async () => {
+$('#btnSaveEntry').addEventListener('click', () => {
   const trip = currentTrip();
   if (!trip) return;
 
@@ -2246,10 +2206,9 @@ $('#btnSaveEntry').addEventListener('click',  async () => {
     return;
   }
 
-  const photoUrls = await Promise.all(pendingPhotos.map(uploadPhoto));
   trip.entries.push({
     id: uid(),
-    photos: photoUrls,
+    photos: [...pendingPhotos],
     place,
     time,
     mood: pickedMood,
@@ -2309,7 +2268,7 @@ $('#btnSaveTrip').addEventListener('click', () => {
     start: $('#tStart').value || todayInput(),
     end: $('#tEnd').value || '',
     place: $('#tPlace').value.trim(),
-    cover: pendingCover ? await uploadPhoto(pendingCover) : '',
+    cover: pendingCover,
     inviteCode: raw + '-' + Math.floor(Math.random() * 9000 + 1000),
     members: [{ id: me().id, name: me().name, avatar: me().avatar, role: 'owner' }],
     board: { plan:'', checklist:[], notes:'', letter:'' },
@@ -2366,19 +2325,19 @@ $('#btnCopyCode').addEventListener('click', async () => {
 /* ==========================================================
    加入旅行
    ========================================================== */
-$('#btnDoJoin').addEventListener('click', async () => {
+$('#btnJoin').addEventListener('click', () => {
+  $('#joinCode').value = '';
+  $('#maskJoin').classList.add('show');
+  setTimeout(() => $('#joinCode').focus(), 240);
+});
+
+$('#btnDoJoin').addEventListener('click', () => {
   const code = $('#joinCode').value.trim().toUpperCase();
   if (!code){ toast('输入口令吧 🔑'); return; }
 
-  toast('正在查找…');
-  const remote = await cloudFetchByCode(code);
-  if (!remote){ toast('没有找到这个口令的旅行 😢'); return; }
+  const trip = state.trips.find(t => (t.inviteCode || '').toUpperCase() === code);
+  if (!trip){ toast('没有找到这个口令的旅行 😢'); return; }
 
-  const idx = state.trips.findIndex(t => t.id === remote.id);
-  if (idx >= 0) state.trips[idx] = remote;
-  else state.trips.unshift(remote);
-
-  const trip = state.trips.find(t => t.id === remote.id);
   if (!trip.members.some(m => m.id === me().id)){
     trip.members.push({ id: me().id, name: me().name, avatar: me().avatar, role: 'editor' });
   }
@@ -2404,27 +2363,7 @@ function boot(){
   } else {
     seedData();
     render();
-    subscribeRealtime();   // ← 新增这一行
   }
-}
-
-/* ---------- Realtime ---------- */   // ← 新增这个函数
-function subscribeRealtime(){
-  sb.channel('trips')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'trips' }, payload => {
-      const remote = payload.new?.data;
-      if (!remote) return;
-      // 正在打字的输入框不要被打断
-      if (document.activeElement?.tagName === 'TEXTAREA') return;
-
-      const i = state.trips.findIndex(t => t.id === remote.id);
-      if (i >= 0){
-        state.trips[i] = remote;
-        localStorage.setItem(LS_KEY, JSON.stringify(state));
-        render();
-      }
-    })
-    .subscribe();
 }
 
 boot();
